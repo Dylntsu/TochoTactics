@@ -17,17 +17,34 @@ grid_margin_right = 0.411
 formation_margin_left = 0.389
 formation_margin_right = 0.409
 
+[node name="Background2" type="TextureRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 415.0
+offset_top = -514.0
+offset_right = 1024.0
+offset_bottom = 1088.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.642, 0.735)
+size_flags_horizontal = 8
+size_flags_vertical = 8
+texture = ExtResource("2_4aaqw")
+stretch_mode = 3
+
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 layer = -1
 
 [node name="Background" type="TextureRect" parent="CanvasLayer"]
+visible = false
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -364.0
-offset_top = -523.00006
-offset_right = -364.0
-offset_bottom = -523.00006
+offset_left = -328.0
+offset_top = -516.0
+offset_right = -328.0
+offset_bottom = -516.0
 grow_horizontal = 2
 grow_vertical = 2
 scale = Vector2(1.5643929, 1.7869186)
@@ -92,11 +109,13 @@ horizontal_alignment = 1
 [node name="ScrollContainer" type="ScrollContainer" parent="UI_Layer/MainLayout/HBoxContainer/LeftPanel"]
 layout_mode = 2
 size_flags_vertical = 3
+horizontal_scroll_mode = 0
 
 [node name="PlaysGrid" type="GridContainer" parent="UI_Layer/MainLayout/HBoxContainer/LeftPanel/ScrollContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-columns = 3
+size_flags_horizontal = 3
+columns = 2
 
 [node name="Spacer" type="Control" parent="UI_Layer/MainLayout/HBoxContainer"]
 layout_mode = 2
@@ -109,6 +128,7 @@ mouse_filter = 2
 
 [node name="BtnNew" type="Button" parent="UI_Layer/MainLayout/HBoxContainer/RightPanel"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 120)
 layout_mode = 2
 text = "+ Nueva"
 
@@ -117,25 +137,37 @@ layout_mode = 2
 
 [node name="BtnSave" type="Button" parent="UI_Layer/MainLayout/HBoxContainer/RightPanel"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 120)
 layout_mode = 2
 text = "Guardar/Editar"
 
 [node name="BtnReset" type="Button" parent="UI_Layer/MainLayout/HBoxContainer/RightPanel"]
+custom_minimum_size = Vector2(120, 120)
 layout_mode = 2
 text = "Reiniciar"
 
 [node name="BtnDelete" type="Button" parent="UI_Layer/MainLayout/HBoxContainer/RightPanel"]
+custom_minimum_size = Vector2(120, 120)
 layout_mode = 2
 text = "Borrar"
 
-[node name="SavePlayGroup" type="ConfirmationDialog" parent="UI_Layer"]
+[node name="SavePlayPopup" type="ConfirmationDialog" parent="UI_Layer"]
 unique_name_in_owner = true
-size = Vector2i(295, 125)
+title = "Guardar Jugada"
+initial_position = 2
 content_scale_size = Vector2i(75, 95)
 ok_button_text = "Guardar "
 cancel_button_text = "Cancelar"
 
-[node name="PlayNameInput" type="LineEdit" parent="UI_Layer/SavePlayGroup"]
+[node name="PlayNameInput" type="LineEdit" parent="UI_Layer/SavePlayPopup"]
 unique_name_in_owner = true
 offset_right = 68.5625
 offset_bottom = 31.0
+
+[node name="CaptureFrame" type="ReferenceRect" parent="."]
+offset_left = 415.99997
+offset_top = 54.000008
+offset_right = 455.99997
+offset_bottom = 94.00001
+scale = Vector2(9.819501, 15.276275)
+mouse_filter = 2

@@ -6,6 +6,7 @@ extends Node2D
 @onready var route_manager = $RouteManager
 @onready var nodes_container = $NodesContainer
 @onready var background = $CanvasLayer/Background 
+@onready var capture_frame = $CaptureFrame
 
 
 # ==============================================================================
@@ -13,16 +14,17 @@ extends Node2D
 # ==============================================================================
 
 @export_group("Posicionamiento de Jugadores")
-## Qué tan cerca del borde inferior aparecen los jugadores (multiplicador de spacing)
+## que tan cerca del borde inferior aparecen los jugadores (multiplicador de spacing)
 @export_range(0.5, 4.0) var spawn_vertical_offset: float = 1.5
-## Qué tanto se adelanta el QB respecto a la línea (multiplicador de spacing)
+## que tanto se adelanta el qb respecto a la linea (multiplicador de spacing)
 @export_range(0.0, 2.0) var qb_advance_offset: float = 0.5
 
-@export_group("Límites de Jugada")
-## Fila de la grilla donde empieza la zona de anotación/límite superior
+@export_group("Limites de Jugada")
+## fila de la grilla donde empieza la zona de anotacion/limite superior
 @export var offensive_limit_row_offset: int = 4
+
 # ==============================================================================
-# CONFIGURACIÓN
+# CONFIGURACION
 # ==============================================================================
 @export_group("Assets")
 @export var player_scene: PackedScene = preload("res://src/playbook/player/Player.tscn")
@@ -43,7 +45,7 @@ extends Node2D
 @export_range(0.0, 0.5) var formation_bottom_margin: float = 0.099
 @export var player_count: int = 5 
 
-# Estado Local (Solo visuales estáticos)
+# estado local (solo visuales estaticos)
 var grid_points: Array[Vector2] = []
 var spacing: int = 0
 
@@ -68,7 +70,7 @@ func rebuild_editor():
 	render_grid_visuals()
 	render_formation() 
 	
-	# Usamos 'background.get_global_rect()' para los límites totales de la cancha
+	# usamos 'background.get_global_rect()' para los limites totales de la cancha
 	route_manager.setup(grid_points, spacing, background.get_global_rect())
 
 # ==============================================================================
@@ -103,29 +105,27 @@ func render_formation():
 
 	var field_rect = background.get_global_rect()
 	
-	# 1. Definimos el ANCHO correcto (restando márgenes laterales)
-	# Usamos las mismas variables que ya tenías para la formación
+	# usamos las mismas variables que ya tenias para la formacion
 	var formation_start_x = field_rect.position.x + (field_rect.size.x * formation_margin_left)
 	var formation_end_x = field_rect.position.x + field_rect.size.x * (1.0 - formation_margin_right)
 	var formation_width = formation_end_x - formation_start_x
 	
-	# 2. Definimos el ALTO correcto
 	var limit_top_y = get_offensive_zone_limit_y()
 	var limit_bottom_y = field_rect.end.y - (spacing * 0.25)
 	
-	# 3. CREAMOS EL LÍMITE CORRECTO (Jaula ajustada)
+	#creamos el limite correcto (jaula ajustada)
 	var limit_rect = Rect2(
-		formation_start_x,      # Empezar donde empieza el margen izquierdo
+		formation_start_x,      # empezar donde empieza el margen izquierdo
 		limit_top_y, 
-		formation_width,        # Ancho restringido por los márgenes
+		formation_width,        # ancho restringido por los margenes
 		limit_bottom_y - limit_top_y
 	)
 
-	# 1. Definimos el centro horizontal y vertical de la "jaula" para seguridad
+	# se define el centro horizontal y vertical de la "jaula" para seguridad
 	var cage_center_y = limit_rect.position.y + (limit_rect.size.y / 2.0)
 	
-	# 2. Ajustamos la formación para que use el limit_rect como referencia
-	# En lugar de usar el field_rect total, usamos el límite inferior de la jaula
+	# se ajustam la formacion para que use el limit_rect como referencia
+	# en lugar de usar el field_rect total, usamos el limite inferior de la jaula
 	var formation_y = limit_rect.end.y - (spacing * 1.5) 
 	
 	var player_step = 0
@@ -139,24 +139,24 @@ func render_formation():
 		player.player_id = i
 		player.limit_rect = limit_rect 
 		
-		# Cálculo de X 
+		# calculo de x 
 		var pos_x = formation_start_x + (i * player_step) if player_count > 1 else limit_rect.get_center().x
 		
-		# Calculamos la posición Y y nos aseguramos de que esté dentro de la jaula
+		# calculamos la posicion y y nos aseguramos de que este dentro de la jaula
 		var final_y = formation_y
 		
-		# Si es el QB (el del centro), lo adelantamos un poco pero siempre dentro de la zona
+		# si es el qb (el del centro), lo adelantamos un poco pero siempre dentro de la zona
 		if i == qb_index:
-			final_y -= spacing * 0.5 # Lo "subimos" un poco en la pantalla
+			final_y -= spacing * 0.5 # lo "subimos" un poco en la pantalla
 			
-		# Aplicamos un clamp final de seguridad para que el spawn sea garantizado
-		# Restamos un pequeño margen para que el cuerpo del jugador no toque el borde
+		# aplicamos un clamp final de seguridad para que el spawn sea garantizado
+		# restamos un pequeño margen para que el cuerpo del jugador no toque el borde
 		var margin = spacing * 0.5
 		final_y = clamp(final_y, limit_rect.position.y + margin, limit_rect.end.y - margin)
 		
 		player.position = Vector2(pos_x, final_y)
 		
-		# --- CONEXIONES ---
+		# --- conexiones ---
 		player.start_route_requested.connect(_on_player_start_route_requested)
 		player.moved.connect(_on_player_moved)
 		
@@ -164,81 +164,80 @@ func render_formation():
 
 func get_offensive_zone_limit_y() -> float:
 	if grid_points.is_empty(): return 0.0
-	var limit_index = int(grid_size.y - 4) 
+	# correccion: usamos la variable exportada en lugar del valor hardcodeado '4'
+	var limit_index = int(grid_size.y - offensive_limit_row_offset) 
 	if limit_index < 0: limit_index = 0
 	return grid_points[limit_index].y
 
 # ==============================================================================
-# INPUT (Delegado al RouteManager)
+# INPUT (DELEGADO AL ROUTEMANAGER)
 # ==============================================================================
-# En PlaybookEditor.gd
 
 func _input(event):
 	var mouse_pos = get_local_mouse_position()
 	
-	# 1. LOGICA DE DIBUJO STANDARD (Esto es lo que faltaba)
+	# 1. logica de dibujo standard (esto es lo que faltaba)
 	if event is InputEventMouseButton:
-		# Clic Izquierdo: Agregar nodo
+		# clic izquierdo: agregar nodo
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 			if route_manager.is_editing:
 				route_manager.handle_input(mouse_pos)
 			else:
-				# Si NO estamos editando, intentamos agarrar una ruta existente
+				# si no estamos editando, intentamos agarrar una ruta existente
 				_try_click_existing_route_end(mouse_pos)
 		
-		# Clic Derecho: Terminar ruta
+		# clic derecho: terminar ruta
 		elif event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
 			route_manager.finish_route()
 			
 	elif event is InputEventMouseMotion:
-		# Movimiento: Actualizar preview
+		# movimiento: actualizar preview
 		route_manager.update_preview(mouse_pos)
-		#dibujo sosteniendo
+		# dibujo sosteniendo
 		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and route_manager.is_editing:
 			route_manager.handle_input(mouse_pos)
 
-# Función auxiliar para detectar clics en las puntas de las rutas
+# funcion auxiliar para detectar clics en las puntas de las rutas
 func _try_click_existing_route_end(mouse_pos: Vector2):
-	var snap_range = route_manager._snap_distance # Usamos la misma distancia de imán
+	var snap_range = route_manager._snap_distance # usamos la misma distancia de iman
 	
 	for pid in route_manager.active_routes:
 		var line = route_manager.active_routes[pid]
 		if line.get_point_count() > 0:
 			var end_point = line.points[line.get_point_count() - 1]
 			
-			# Si hicimos clic cerca del final de esta ruta
+			# si hicimos clic cerca del final de esta ruta
 			if mouse_pos.distance_to(end_point) < snap_range:
 				route_manager.resume_editing_route(pid)
-				return # Encontramos una, dejamos de buscar
+				return # encontramos una, dejamos de buscar
 
-# --- CALLBACKS DE JUGADORES (CORREGIDOS) ---
+# --- callbacks de jugadores (corregidos) ---
 
-# 1. Cuando el jugador pide iniciar ruta:
+# 1. cuando el jugador pide iniciar ruta:
 func _on_player_start_route_requested(player_node):
 	var pid = player_node.player_id
 	
-	# CASO A: El jugador YA TIENE una ruta
+	# caso a: el jugador ya tiene una ruta
 	if route_manager.active_routes.has(pid):
-		# En lugar de borrar y salir, le decimos al manager que REANUDE la edición.
+		# en lugar de borrar y salir, le decimos al manager que reanude la edicion.
 		route_manager.resume_editing_route(pid)
-		
 		return 
 
-	# CASO B: El jugador NO tiene ruta
-	# Si estábamos dibujando a otro, guardamos esa primero
+	# caso b: el jugador no tiene ruta
+	# si estabamos dibujando a otro, guardamos esa primero
 	if route_manager.is_editing and route_manager.current_player_id != pid:
 		route_manager.finish_route()
 	
-	# Iniciamos nueva ruta desde cero
+	# iniciamos nueva ruta desde cero
 	route_manager.try_start_route(pid, player_node.get_route_anchor())
 
-# 2. Cuando el jugador se mueve:
+# 2. cuando el jugador se mueve:
 func _on_player_moved(player_node):
-	# Avisamos al manager para que actualice el origen de la línea.
+	# avisamos al manager para que actualice el origen de la linea.
 	route_manager.update_route_origin(player_node.player_id, player_node.get_route_anchor())
 	
 
-## Interface pública para resetear el estado de la jugada actual.
+## interface publica para resetear el estado de la jugada actual.
 ## puede extenderse sin cambiar la llamada original.
 func reset_current_play() -> void:
 	_clear_routes()
@@ -249,39 +248,80 @@ func _clear_routes() -> void:
 		route_manager.clear_all_routes()
 
 func _restore_initial_formation() -> void:
-	# Reusamos la lógica de reconstrucción existente
+	# reusamos la logica de reconstruccion existente
 	rebuild_editor()
 
-## Captura el estado actual de jugadores y rutas
-func get_play_snapshot() -> Dictionary:
-	var snapshot = {
-		"timestamp": Time.get_unix_time_from_system(),
-		"player_positions": {},
-		"routes": {}
-	}
+# ==============================================================================
+# PERSISTENCIA Y MEMENTO (LOGICA PLAY DATA)
+# ==============================================================================
+
+## [cite_start]genera el recurso playdata con el estado actual y captura miniatura [cite: 1]
+func get_play_resource() -> PlayData:
+	var new_play = PlayData.new()
+	new_play.timestamp = Time.get_unix_time_from_system()
 	
+	# guardar posiciones de jugadores
 	for player in nodes_container.get_children():
 		if "player_id" in player:
-			snapshot["player_positions"][player.player_id] = player.position
+			new_play.player_positions[player.player_id] = player.position
 	
+	# guardar puntos de rutas
 	for pid in route_manager.active_routes:
 		var line = route_manager.active_routes[pid]
 		if is_instance_valid(line):
-			snapshot["routes"][pid] = line.points
-		
-	return snapshot
+			new_play.routes[pid] = line.points
+			
+	# capturar imagen para caratula
+	new_play.preview_texture = await get_play_preview_texture()
+	
+	return new_play
 
-## Función principal de carga llamada por la UI
-func load_play_data(play_snapshot: Dictionary) -> void:
-	# 1. Limpiar el campo antes de cargar
+## captura el area delimitada manualmente por el cuadro rojo
+func get_play_preview_texture() -> ImageTexture:
+	# esperamos que se renderice el frame actual
+	await get_tree().process_frame
+	await get_tree().process_frame
+	
+	# capturamos la pantalla completa
+	var screenshot: Image = get_viewport().get_texture().get_image()
+	
+	# obtenemos la posicion y tamaño del cuadro manual
+	# get_global_rect nos da las coordenadas exactas de tu rectangulo rojo
+	var frame_rect: Rect2 = capture_frame.get_global_rect()
+	
+	# recorte de seguridad basado en el viewport
+	var viewport_size = get_viewport().get_visible_rect().size
+	var x = clamp(frame_rect.position.x, 0, viewport_size.x)
+	var y = clamp(frame_rect.position.y, 0, viewport_size.y)
+	var w = min(frame_rect.size.x, viewport_size.x - x)
+	var h = min(frame_rect.size.y, viewport_size.y - y)
+	
+	var final_region = Rect2(x, y, w, h)
+
+	# procesar el recorte
+	if w > 0 and h > 0:
+		var cropped_img = screenshot.get_region(final_region)
+		# redimensionamos a un tamaño estandar para la lista ui
+		cropped_img.resize(200, 250, Image.INTERPOLATE_LANCZOS)
+		return ImageTexture.create_from_image(cropped_img)
+	
+	return null
+
+#carga datos desde un recurso (disco) o snapshot (memoria)
+func load_play_data(play_data) -> void:
+	# limpiar el campo antes de cargar
 	if route_manager:
 		route_manager.clear_for_load()
 	
-	# 2. Restaurar posiciones de jugadores
-	_restore_player_positions(play_snapshot.get("player_positions", {}))
+	# manejo polimorfico para recursos o diccionarios
+	var positions = play_data.get("player_positions") if play_data is Dictionary else play_data.player_positions
+	var routes = play_data.get("routes") if play_data is Dictionary else play_data.routes
 	
-	# 3. Restaurar rutas
-	_restore_routes(play_snapshot.get("routes", {}))
+	# restaurar posiciones de jugadores
+	_restore_player_positions(positions)
+	
+	# restaurar rutas
+	_restore_routes(routes)
 
 func _restore_player_positions(positions: Dictionary) -> void:
 	for player in nodes_container.get_children():
@@ -289,7 +329,7 @@ func _restore_player_positions(positions: Dictionary) -> void:
 			var id = player.player_id
 			if positions.has(id):
 				player.position = positions[id]
-				# Emitimos la señal para que si hay una ruta iniciada, se mueva
+				# emitimos la señal para que si hay una ruta iniciada, se mueva
 				player.moved.emit(player)
 
 func _restore_routes(routes: Dictionary) -> void:
