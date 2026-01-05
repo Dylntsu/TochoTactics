@@ -23,6 +23,7 @@ var route_distances: Dictionary = {}
 var is_editing: bool = false
 var current_player_id: int = -1
 var current_dist_accumulator: float = 0.0
+var is_locked: bool = false
 
 var _grid_points: Array[Vector2]
 var _spacing: int
@@ -30,6 +31,13 @@ var _snap_distance: float
 var _max_step_len: float
 var _dash_texture: Texture2D
 var _field_bounds: Rect2 = Rect2()
+
+## Bloquea o desbloquea la capacidad de editar rutas
+func set_locked(value: bool):
+	is_locked = value
+	if is_locked:
+		# Si bloqueamos mientras se editaba, cancelamos inmediatamente
+		cancel_editing()
 
 func setup(grid_points: Array[Vector2], spacing: int, field_bounds: Rect2):
 	_grid_points = grid_points
@@ -40,17 +48,34 @@ func setup(grid_points: Array[Vector2], spacing: int, field_bounds: Rect2):
 	_dash_texture = _generate_dash_texture()
 
 # --- ANCLAJE DE RUTA ---
-func update_route_origin(player_id: int, new_origin: Vector2):
+func update_route_origin(player_id: int, new_origin: Vector2, force: bool = false):
+	# Si está bloqueado y no es un movimiento forzado se ignora
+	if is_locked and not force: 
+		return
+	
 	if active_routes.has(player_id):
 		var line = active_routes[player_id]
 		if line.get_point_count() > 0:
 			var old_origin = line.get_point_position(0)
+			
+			# sincronizamos la distancia: si el jugador se aleja o acerca al primer punto,
+			# recalculamos la distancia total de la ruta para evitar errores en el color de la línea.
 			if line.get_point_count() > 1:
 				var first_target = line.get_point_position(1)
-				route_distances[player_id] += (new_origin.distance_to(first_target) - old_origin.distance_to(first_target))
+				var old_dist = old_origin.distance_to(first_target)
+				var new_dist = new_origin.distance_to(first_target)
+				
+				# actualizamos el acumulador de distancia del jugador específico
+				if route_distances.has(player_id):
+					route_distances[player_id] += (new_dist - old_dist)
+			
+			# ajustamos físicamente el primer punto de la Line2D
 			line.set_point_position(0, new_origin)
 
 func try_start_route(player_id: int, start_pos: Vector2) -> bool:
+	# Verificación de bloqueo antes de iniciar edición
+	if is_locked: return false 
+
 	if active_routes.has(player_id):
 		var old_line = active_routes[player_id]
 		if is_instance_valid(old_line): old_line.queue_free()
@@ -69,7 +94,9 @@ func try_start_route(player_id: int, start_pos: Vector2) -> bool:
 	return true
 
 func handle_input(mouse_pos: Vector2):
-	if not is_editing: return
+	# Verificación de bloqueo y estado de edición
+	if is_locked or not is_editing: return
+	
 	if _field_bounds.has_area() and not _field_bounds.has_point(mouse_pos): return 
 	
 	var closest = _get_closest_node(mouse_pos)
@@ -107,10 +134,13 @@ func handle_input(mouse_pos: Vector2):
 			last_node = p
 	update_visuals()
 
+
 func update_preview(mouse_pos: Vector2):
-	if not is_editing or current_route.is_empty():
+	# Si está bloqueado o no editamos, limpiamos la línea de previsualización
+	if is_locked or not is_editing or current_route.is_empty():
 		preview_line.points = []
 		return
+		
 	if _field_bounds.has_area() and not _field_bounds.has_point(mouse_pos):
 		preview_line.points = []
 		return
@@ -134,28 +164,19 @@ func update_preview(mouse_pos: Vector2):
 func finish_route():
 	if current_route.size() >= 2:
 		var new_line = route_line.duplicate()
-		
-		# 1. Asignar puntos y estilo
 		new_line.points = current_route
 		var color_idx = current_player_id % PLAYER_COLORS.size()
 		new_line.default_color = PLAYER_COLORS[color_idx]
-		
-		# 2. Configuración de Textura
 		new_line.texture = _dash_texture
 		new_line.texture_mode = Line2D.LINE_TEXTURE_TILE
 		if current_player_id % 2 != 0: 
 			new_line.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
 
-		# Forzamos que la línea sea "Top Level". Para que no se mueva de lugar,
-		# usamos global_position del manager si fuera necesario, pero al ser duplicado
 		new_line.z_as_relative = false 
-		new_line.z_index = 5 + current_player_id # Antes era 100+, ahora es bajo
-		
-		# Asegurar opacidad total
+		new_line.z_index = 5 + current_player_id
 		new_line.default_color.a = 1.0
 		new_line.visible = true
 		
-		# 4. Registro y Limpieza
 		add_child(new_line) 
 		active_routes[current_player_id] = new_line
 		route_distances[current_player_id] = current_dist_accumulator
@@ -178,7 +199,9 @@ func update_visuals():
 	else: route_line.default_color = Color(1, 0.5, 0)
 
 func resume_editing_route(player_id: int):
-	if not active_routes.has(player_id): return
+	# Si está bloqueado, no permitimos retomar edición
+	if is_locked or not active_routes.has(player_id): return
+	
 	var existing_line = active_routes[player_id]
 	current_route = [] 
 	current_route.append_array(existing_line.points)
@@ -238,7 +261,6 @@ func _generate_dash_texture() -> GradientTexture2D:
 	tex.width = 32; tex.height = 4
 	return tex
 
-## Limpia el estado de las rutas y remueve los nodos visuales de la escena.
 func clear_all_routes() -> void:
 	_abort_active_editing()
 	_destroy_visual_lines()
@@ -250,7 +272,6 @@ func _abort_active_editing() -> void:
 
 func _destroy_visual_lines() -> void:
 	for child in get_children():
-		# Verificación defensiva para no borrar las plantillas de configuración
 		if _is_removable_line(child):
 			child.queue_free()
 
@@ -261,11 +282,9 @@ func _clear_internal_data() -> void:
 	active_routes.clear()
 	route_distances.clear()
 	
-## Borra el estado actual para preparar la carga de una nueva jugada
 func clear_for_load() -> void:
 	clear_all_routes()
 
-## Reconstruye las rutas visuales basándose en el diccionario de datos
 func load_routes_from_data(routes_data: Dictionary) -> void:
 	for player_id in routes_data:
 		var points = routes_data[player_id]
@@ -275,20 +294,14 @@ func load_routes_from_data(routes_data: Dictionary) -> void:
 		_reconstruct_saved_route(player_id, points)
 
 func _reconstruct_saved_route(id: int, points: Array) -> void:
-	# preparamos el estado temporal para reusar finish_route()
 	current_player_id = id
 	current_route = []
 	current_route.append_array(points)
 	current_dist_accumulator = _calculate_path_distance(current_route)
-	
-	# Creamos la línea definitiva
 	finish_route()
 
-## devuelve un diccionario 
 func get_all_routes() -> Dictionary:
-	#donde se guardan las lineas de los nodos
 	var routes_dict = {}
 	for p_id in active_routes.keys():
-		# se obtienen los puntos de la línea dibujada
 		routes_dict[p_id] = active_routes[p_id].get_points() 
 	return routes_dict

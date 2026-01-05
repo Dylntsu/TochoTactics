@@ -111,11 +111,17 @@ func get_route_anchor() -> Vector2:
 # MANEJO DE ENTRADA
 # ==============================================================================
 func _input_event(_viewport, event, _shape_idx):
+	# Si la jugada se está ejecutando, ignoramos cualquier clic
+	if is_playing: 
+		return
+		
+	#Solo permitimos dibujar si no estamos jugando
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		start_route_requested.emit(self)
+		
+	# igual solo permitimos arrastrar si no estamos jugando
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
-		if not is_playing: # No arrastrar si la jugada está en ejecución
-			start_dragging()
+		start_dragging()
 
 func _input(event):
 	if is_dragging and event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and not event.pressed:
@@ -133,6 +139,8 @@ func stop_dragging():
 	modulate.a = 1.0
 	scale = Vector2(1.0, 1.0)
 	z_index = 20
+	# se guarda su nueva "posición inicial" para los futuros resets
+	save_starting_position()
 
 ## Guarda la posición actual como el punto de inicio oficial
 func save_starting_position():

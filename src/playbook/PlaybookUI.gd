@@ -306,6 +306,7 @@ func _log_error(message: String) -> void:
 func _on_play_preview_pressed() -> void:
 	if not _is_editor_ready(): return
 	
+	editor.lock_editor_for_play()# bloqueo
 	# Mandamos a todos al inicio antes de correr
 	for player in editor.nodes_container.get_children():
 		if player.has_method("reset_to_start"):
@@ -331,4 +332,5 @@ func _show_toast(message: String, color: Color = Color.WHITE) -> void:
 func _on_reset_button_pressed() -> void:
 	if _is_editor_ready():
 		editor.reset_formation_state()
+		editor.unlock_editor_for_editing() #desbloqeo
 		_show_toast("Posiciones restablecidas", Color.LIGHT_BLUE)

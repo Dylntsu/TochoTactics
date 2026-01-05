@@ -373,11 +373,36 @@ func unlock_all_players():
 
 ## Restablece todo el lienzo al estado inicial de formación
 func reset_formation_state():
-	# resetear cada jugador
+	# detenemos cualquier animación activa antes de mover nada
+	stop_all_animations()
+	
 	for child in nodes_container.get_children():
 		if child is Area2D and child.has_method("reset_to_start"):
+			# el jugador vuelve a su posición inicial guardada
 			child.reset_to_start()
 			
-	# forzar actualización del RouteManager para que las líneas se redibujen desde el inicio
-	if route_manager.has_method("update_all_lines"):
-		route_manager.update_all_lines()
+			# se fuerza al RouteManager a que mueva el 
+			# inicio de la línea a la posición reseteada del jugador.
+			if route_manager:
+				route_manager.update_route_origin(child.player_id, child.get_route_anchor())
+	
+	# desbloqueamos el editor para permitir nuevas ediciones
+	unlock_editor_for_editing()
+
+## bloquea todo el sistema para la ejecución
+func lock_editor_for_play():
+	route_manager.set_locked(true)
+	for child in nodes_container.get_children():
+		if child is Area2D:
+			child.input_pickable = false # evita que el mouse los detecte
+			if child.has_method("stop_animation"):
+				child.is_playing = true
+
+## desbloquea todo para volver a editar
+func unlock_editor_for_editing():
+	route_manager.set_locked(false)
+	for child in nodes_container.get_children():
+		if child is Area2D:
+			child.input_pickable = true
+			if child.has_method("reset_to_start"):
+				child.reset_to_start()
