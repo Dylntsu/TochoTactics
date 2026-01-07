@@ -46,6 +46,15 @@ signal content_changed # señal para avisar a la UI
 @export_range(0.0, 0.5) var formation_bottom_margin: float = 0.099
 @export var player_count: int = 5 
 
+# Array con las texturas de los jugadores
+var player_textures = [
+	preload("res://assets/players/face_01.png"),
+	preload("res://assets/players/face_02.png"),
+	preload("res://assets/players/face_03.png"),
+	preload("res://assets/players/face_04.png"),
+	preload("res://assets/players/face_05.png"),
+]
+
 # ESTADO LOCAL
 var grid_points: Array[Vector2] = []
 var spacing: int = 0
@@ -106,12 +115,14 @@ func render_grid_visuals():
 		nodes_container.add_child(marker)
 
 func render_formation():
+	# 1. Limpieza de jugadores previos
 	for child in nodes_container.get_children():
-		if child.name.begins_with("PlayerStart"):
+		if child.name.begins_with("PlayerStart") or child is Area2D:
 			child.queue_free()
 
 	var field_rect = background.get_global_rect()
 	
+	# 2. Cálculos de límites y áreas de formación
 	var formation_start_x = field_rect.position.x + (field_rect.size.x * formation_margin_left)
 	var formation_end_x = field_rect.position.x + field_rect.size.x * (1.0 - formation_margin_right)
 	var formation_width = formation_end_x - formation_start_x
@@ -120,7 +131,6 @@ func render_formation():
 	var limit_bottom_y = field_rect.end.y - (spacing * 0.2)
 	
 	var limit_rect = Rect2(formation_start_x, limit_top_y, formation_width, limit_bottom_y - limit_top_y)
-
 	var formation_y = limit_rect.end.y - (spacing * formation_y_offset) 
 	
 	var player_step = 0
@@ -129,11 +139,19 @@ func render_formation():
 	
 	var qb_index = int(player_count / 2)
 	
+	# 3. Creación y configuración de jugadores
 	for i in range(player_count):
 		var player = player_scene.instantiate()
 		player.player_id = i
 		
-		# se calcula la posición por defecto 
+		# --- NUEVA LÓGICA DE IDENTIDAD VISUAL ---
+		# Asignamos una textura del array 'player_textures' usando el ID
+		if player_textures.size() > 0:
+			var tex = player_textures[i % player_textures.size()]
+			# Configuramos el sprite y el número (Label) en el Player.gd
+			player.setup_player_visual(tex, i)
+		
+		# Cálculo de posición por defecto
 		var pos_x = formation_start_x + (i * player_step) if player_count > 1 else limit_rect.get_center().x
 		var final_y = formation_y
 		
@@ -144,23 +162,24 @@ func render_formation():
 		final_y = clamp(final_y, limit_rect.position.y + safety_margin, limit_rect.end.y - safety_margin)
 		pos_x = clamp(pos_x, limit_rect.position.x + safety_margin, limit_rect.end.x - safety_margin)
 		
+		# Memoria de posición: Respetamos si el jugador fue movido o cargado previamente
 		if _active_play_positions.has(i):
-			# Si ya existe en memoria (por carga o movimiento), usamos esa posición
 			player.position = _active_play_positions[i]
 		else:
-			# Si es nueva, usamos el cálculo matemático
 			player.position = Vector2(pos_x, final_y)
 		
+		# Configuración de límites y guardado de base
 		player.limit_rect = limit_rect 
 		player.save_starting_position() 
 		
-		# Conexiones
+		# 4. Conexiones de señales
 		player.start_route_requested.connect(_on_player_start_route_requested)
 		player.moved.connect(_on_player_moved)
 		
 		if not player.interaction_ended.is_connected(_on_child_action_finished):
 			player.interaction_ended.connect(_on_child_action_finished)
 		
+		# Agregamos al contenedor al final para asegurar que 'setup' ya terminó
 		nodes_container.add_child(player)
 
 func get_offensive_zone_limit_y() -> float:

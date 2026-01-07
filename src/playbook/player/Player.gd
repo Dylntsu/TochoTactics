@@ -11,6 +11,10 @@ signal interaction_ended
 # PROPIEDADES EXPORTADAS Y VARIABLES
 # ==============================================================================
 @export var player_id: int = 0
+@onready var sprite = $Sprite2D 
+@onready var label = $Label 
+## Tamaño objetivo en píxeles que queremos que ocupen las cabezas
+@export var target_head_size: float = 80.0
 
 # Variable para guardar la ruta que se cargó desde el archivo
 var current_route: PackedVector2Array = []
@@ -157,3 +161,31 @@ func reset_to_start():
 	input_pickable = true # Permite clics de nuevo
 	is_playing = false
 	modulate.a = 1.0 # Restaura opacidad por si acaso
+
+## Cambia la imagen del jugador y su número visual
+func setup_player_visual(texture: Texture2D, id: int):
+	# Asegurar referencias (Safe Access)
+	if sprite == null: sprite = $Sprite2D
+	if label == null: label = $Label
+	
+	if sprite and texture:
+		sprite.texture = texture
+		
+		# --- LÓGICA DE ESCALADO AUTOMÁTICO ---
+		var original_size = texture.get_size()
+		# Evitamos división por cero si la textura está vacía
+		if original_size.x > 0 and original_size.y > 0:
+			# Buscamos el lado más largo (ancho o alto)
+			var max_side = max(original_size.x, original_size.y)
+			# Calculamos la escala necesaria para llegar al tamaño objetivo
+			var scale_factor = target_head_size / max_side
+			sprite.scale = Vector2(scale_factor, scale_factor)
+			
+			# Opcional: Centrar el sprite si no lo está en el editor
+			sprite.centered = true
+	
+	if label:
+		# Sincronizamos el número con el ID (ID 0 = Jugador 1)
+		label.text = str(id + 1)
+		# Posicionamos el label un poco arriba de la cabeza dinámicamente
+		label.position.y = -(target_head_size / 2.0) - 15

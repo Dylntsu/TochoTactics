@@ -1,24 +1,37 @@
-[gd_scene load_steps=3 format=3 uid="uid://bmpr647hc8cdl"]
+[gd_scene load_steps=4 format=3 uid="uid://bmpr647hc8cdl"]
 
 [ext_resource type="Script" uid="uid://b88mwkhoeiapq" path="res://src/playbook/player/Player.gd" id="1_enjsy"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_57wkv"]
 radius = 22.803509
 
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_enjsy"]
+load_path = "res://.godot/imported/face_03.png-283476eb19f533442b266bd42e0f7e57.ctex"
+
 [node name="Player" type="Area2D"]
 script = ExtResource("1_enjsy")
+target_head_size = 72.205
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(19, 19)
 shape = SubResource("CircleShape2D_57wkv")
 
 [node name="Panel" type="Panel" parent="."]
+visible = false
 offset_right = 40.0
 offset_bottom = 40.0
 mouse_filter = 2
 
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(18.594461, 18.537846)
+scale = Vector2(1.1822189, 1.1822186)
+texture = SubResource("CompressedTexture2D_enjsy")
+
 [node name="Label" type="Label" parent="."]
+unique_name_in_owner = true
+visible = false
 offset_right = 40.0
 offset_bottom = 23.0
 text = "5"
 horizontal_alignment = 1
+vertical_alignment = 1
