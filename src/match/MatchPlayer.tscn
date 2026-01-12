@@ -1,24 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://ckn0rdmja4fma"]
+[gd_scene load_steps=3 format=3 uid="uid://ckn0rdmja4fma"]
 
-[ext_resource type="Script" uid="uid://cgiy3uu4qb8w8" path="res://src/playbook/PlaybookEditor.gd" id="1_if8xs"]
 [ext_resource type="Texture2D" uid="uid://dl8pi2jccrcsr" path="res://assets/sprites/tocho_tactics_background.png" id="2_q31dk"]
 [ext_resource type="Script" uid="uid://v5bcnk3p7uvc" path="res://src/playbook/components/RouteManager.gd" id="3_ttpbx"]
-[ext_resource type="Script" uid="uid://b8arbw6hrqmw7" path="res://src/playbook/PlaybookUI.gd" id="4_r7odd"]
-
-[sub_resource type="LabelSettings" id="LabelSettings_sigk0"]
-font_size = 46
-shadow_size = 10
 
 [node name="MatchPlayer" type="Node2D"]
-script = ExtResource("1_if8xs")
-formation_y_offset = 2.301
-qb_depth_offset = 0.989
-spawn_vertical_offset = 0.665
-grid_margin_bottom = 0.014
-grid_margin_left = 0.412
-grid_margin_right = 0.411
-formation_margin_left = 0.389
-formation_margin_right = 0.409
 metadata/_edit_lock_ = true
 
 [node name="Background2" type="TextureRect" parent="."]
@@ -173,6 +158,79 @@ layout_mode = 2
 [node name="HidePanelBtn" type="Button" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/ProfileContainer"]
 layout_mode = 2
 
+[node name="PromptsContainer" type="Control" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="LeftPrompts" type="VBoxContainer" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer"]
+visible = false
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Prompt_Panel" type="HBoxContainer" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer/LeftPrompts"]
+visible = false
+layout_mode = 2
+
+[node name="Boton_View" type="TextureRect" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer/LeftPrompts/Prompt_Panel"]
+layout_mode = 2
+
+[node name="Prompt_Run" type="HBoxContainer" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer/LeftPrompts"]
+visible = false
+layout_mode = 2
+
+[node name="Boton_B" type="TextureRect" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer/LeftPrompts/Prompt_Run"]
+layout_mode = 2
+
+[node name="CorrerLabel" type="Label" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer/LeftPrompts/Prompt_Run"]
+layout_mode = 2
+
+[node name="Prompt_Aim" type="HBoxContainer" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer/LeftPrompts"]
+visible = false
+layout_mode = 2
+
+[node name="Left_Stick" type="TextureRect" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer/LeftPrompts/Prompt_Aim"]
+layout_mode = 2
+
+[node name="LeftSLabel" type="Label" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer/LeftPrompts/Prompt_Aim"]
+layout_mode = 2
+
+[node name="RightPrompts" type="VBoxContainer" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Prompt_Throw" type="HBoxContainer" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer/RightPrompts"]
+visible = false
+layout_mode = 2
+
+[node name="Boton_LT" type="TextureRect" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer/RightPrompts/Prompt_Throw"]
+layout_mode = 2
+
+[node name="LanzarLabel" type="Label" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer/RightPrompts/Prompt_Throw"]
+layout_mode = 2
+
+[node name="Prompt_Dodge" type="HBoxContainer" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer/RightPrompts"]
+visible = false
+layout_mode = 2
+
+[node name="Btn_X" type="TextureRect" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer/RightPrompts/Prompt_Dodge"]
+layout_mode = 2
+
+[node name="DodgeLabel" type="Label" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer/RightPrompts/Prompt_Dodge"]
+layout_mode = 2
+
+[node name="Prompt_Move" type="HBoxContainer" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer/RightPrompts"]
+visible = false
+layout_mode = 2
+
+[node name="Right_Stick" type="TextureRect" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer/RightPrompts/Prompt_Move"]
+layout_mode = 2
+
+[node name="MoveLabel" type="Label" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer/RightPrompts/Prompt_Move"]
+layout_mode = 2
+
 [node name="NodesContainer" type="Node2D" parent="."]
 metadata/_edit_lock_ = true
 
@@ -197,59 +255,6 @@ script = ExtResource("3_ttpbx")
 route_line = NodePath("../RouteLine")
 preview_line = NodePath("../PreviewLine")
 metadata/_edit_lock_ = true
-
-[node name="UI_Layer" type="CanvasLayer" parent="." node_paths=PackedStringArray("editor")]
-layer = 10
-script = ExtResource("4_r7odd")
-editor = NodePath("..")
-
-[node name="MainLayout" type="MarginContainer" parent="UI_Layer"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-scale = Vector2(1.0020921, 1.0079132)
-mouse_filter = 2
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 20
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 20
-metadata/_edit_lock_ = true
-
-[node name="HBoxContainer" type="HBoxContainer" parent="UI_Layer/MainLayout"]
-layout_mode = 2
-mouse_filter = 2
-metadata/_edit_lock_ = true
-
-[node name="LeftPanel" type="VBoxContainer" parent="UI_Layer/MainLayout/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 0
-mouse_filter = 2
-
-[node name="Label" type="Label" parent="UI_Layer/MainLayout/HBoxContainer/LeftPanel"]
-layout_mode = 2
-text = "Jugadas"
-label_settings = SubResource("LabelSettings_sigk0")
-horizontal_alignment = 1
-
-[node name="ScrollContainer" type="ScrollContainer" parent="UI_Layer/MainLayout/HBoxContainer/LeftPanel"]
-layout_mode = 2
-size_flags_vertical = 3
-horizontal_scroll_mode = 0
-
-[node name="PlaysGrid" type="GridContainer" parent="UI_Layer/MainLayout/HBoxContainer/LeftPanel/ScrollContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/h_separation = 7
-theme_override_constants/v_separation = 7
-columns = 2
-
-[node name="AutosaveTimer" type="Timer" parent="UI_Layer"]
-unique_name_in_owner = true
-wait_time = 0.8
-one_shot = true
 
 [node name="CaptureFrame" type="ReferenceRect" parent="."]
 offset_left = 408.0
