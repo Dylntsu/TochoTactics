@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dl0ml1iwcnk15"
-path="res://.godot/imported/Rectangle 1.png-fe94b75769d7ecc1bd699fd6832cc876.ctex"
+uid="uid://dehwmd2s3qy2e"
+path="res://.godot/imported/ui_pause_button.png-18a9fb9052fb5e88da78d014c8294bb5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/Icons/Rectangle 1.png"
-dest_files=["res://.godot/imported/Rectangle 1.png-fe94b75769d7ecc1bd699fd6832cc876.ctex"]
+source_file="res://assets/sprites/Icons/ui_pause_button.png"
+dest_files=["res://.godot/imported/ui_pause_button.png-18a9fb9052fb5e88da78d014c8294bb5.ctex"]
 
 [params]
 

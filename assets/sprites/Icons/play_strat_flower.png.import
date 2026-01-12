@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dnhmfxieruexa"
-path="res://.godot/imported/btn_b_xbox 1.png-d2650d8e25647832f989300aff01ae3a.ctex"
+uid="uid://cjixnxopnbjwf"
+path="res://.godot/imported/play_strat_flower.png-b4c75c3cf1ebe36f72d93bd427b5ff1e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/Icons/btn_b_xbox 1.png"
-dest_files=["res://.godot/imported/btn_b_xbox 1.png-d2650d8e25647832f989300aff01ae3a.ctex"]
+source_file="res://assets/sprites/Icons/play_strat_flower.png"
+dest_files=["res://.godot/imported/play_strat_flower.png-b4c75c3cf1ebe36f72d93bd427b5ff1e.ctex"]
 
 [params]
 

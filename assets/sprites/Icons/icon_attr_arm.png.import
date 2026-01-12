@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://coukhamx4imt6"
-path="res://.godot/imported/Group 17.png-7f6697f712e8658f1880d3c305cf5fd5.ctex"
+uid="uid://dra5r7f4wvgf1"
+path="res://.godot/imported/icon_attr_arm.png-cae135ab69376675f19fcbb64210d4e4.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/Icons/Group 17.png"
-dest_files=["res://.godot/imported/Group 17.png-7f6697f712e8658f1880d3c305cf5fd5.ctex"]
+source_file="res://assets/sprites/Icons/icon_attr_arm.png"
+dest_files=["res://.godot/imported/icon_attr_arm.png-cae135ab69376675f19fcbb64210d4e4.ctex"]
 
 [params]
 

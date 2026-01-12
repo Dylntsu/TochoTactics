@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://i5smxqoq58w2"
-path="res://.godot/imported/Group 16.png-56f895ad3665c25d26e53b7651a0e7e6.ctex"
+uid="uid://c60h3m8j1vbp1"
+path="res://.godot/imported/staminabar_progress.png-7948581e54c65804faebb6a6bd03286f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/Icons/Group 16.png"
-dest_files=["res://.godot/imported/Group 16.png-56f895ad3665c25d26e53b7651a0e7e6.ctex"]
+source_file="res://assets/sprites/Icons/staminabar_progress.png"
+dest_files=["res://.godot/imported/staminabar_progress.png-7948581e54c65804faebb6a6bd03286f.ctex"]
 
 [params]
 

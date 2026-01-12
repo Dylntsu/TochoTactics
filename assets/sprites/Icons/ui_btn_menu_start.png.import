@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://01t8tyv1pibj"
-path="res://.godot/imported/gameSense_icon 1.png-f8143a1baf63e7ca4e41a2ababfee867.ctex"
+uid="uid://ch2glg1kw27nv"
+path="res://.godot/imported/ui_btn_menu_start.png-06c6547ccf1ab625ac5e7bda42d3f0cf.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/Icons/gameSense_icon 1.png"
-dest_files=["res://.godot/imported/gameSense_icon 1.png-f8143a1baf63e7ca4e41a2ababfee867.ctex"]
+source_file="res://assets/sprites/Icons/ui_btn_menu_start.png"
+dest_files=["res://.godot/imported/ui_btn_menu_start.png-06c6547ccf1ab625ac5e7bda42d3f0cf.ctex"]
 
 [params]
 

@@ -1,42 +1,78 @@
-[gd_scene load_steps=3 format=3 uid="uid://ckn0rdmja4fma"]
+[gd_scene load_steps=29 format=3 uid="uid://ckn0rdmja4fma"]
 
+[ext_resource type="Texture2D" uid="uid://18qfwy5glsvh" path="res://assets/sprites/Icons/ui_panel_main_stats.png" id="2_bbkrn"]
 [ext_resource type="Texture2D" uid="uid://dl8pi2jccrcsr" path="res://assets/sprites/tocho_tactics_background.png" id="2_q31dk"]
+[ext_resource type="Texture2D" uid="uid://ccsu1se83blnq" path="res://assets/sprites/Icons/icon_attr_velocity.png" id="3_abdc4"]
 [ext_resource type="Script" uid="uid://v5bcnk3p7uvc" path="res://src/playbook/components/RouteManager.gd" id="3_ttpbx"]
+[ext_resource type="Texture2D" uid="uid://ccuqwqpv5iq43" path="res://assets/sprites/Icons/icon_attr_hands.png" id="4_p0nck"]
+[ext_resource type="Texture2D" uid="uid://5kie5syyc1vu" path="res://assets/sprites/Icons/icon_attr_stamina.png" id="5_8hk05"]
+[ext_resource type="Texture2D" uid="uid://dra5r7f4wvgf1" path="res://assets/sprites/Icons/icon_attr_arm.png" id="6_66tsv"]
+[ext_resource type="Texture2D" uid="uid://cghphnakd73kh" path="res://assets/sprites/Icons/icon_attr_agility.png" id="7_7pxvo"]
+[ext_resource type="Texture2D" uid="uid://kabl4fgat525" path="res://assets/sprites/Icons/icon_attr_intelligence.png" id="8_wujih"]
+[ext_resource type="Texture2D" uid="uid://bhalwrunmsa6q" path="res://assets/sprites/Icons/ui_btn_xbox_b.png" id="9_0ig72"]
+[ext_resource type="Texture2D" uid="uid://ckrpuaq8gq675" path="res://assets/players/face_02.png" id="9_e3h7r"]
+[ext_resource type="Texture2D" uid="uid://bmfp3o5usg22h" path="res://assets/sprites/Icons/ui_btn_xbox_ls.png" id="10_7wety"]
+[ext_resource type="Texture2D" uid="uid://bdc2gahkudm1d" path="res://assets/sprites/Icons/staminaBar_under.png" id="10_l2q5l"]
+[ext_resource type="Texture2D" uid="uid://ckg43tgnoqp1h" path="res://assets/sprites/Icons/ui_btn_xbox_rt.png" id="11_cufyd"]
+[ext_resource type="Texture2D" uid="uid://c60h3m8j1vbp1" path="res://assets/sprites/Icons/staminabar_progress.png" id="11_v8gw5"]
+[ext_resource type="Texture2D" uid="uid://c8wucen1t6gdh" path="res://assets/sprites/Icons/ui_btn_xbox_x.png" id="12_se5ie"]
+[ext_resource type="Texture2D" uid="uid://dvtdan3dh74pk" path="res://assets/sprites/Icons/ui_btn_xbox_rs.png" id="13_e3h7r"]
+[ext_resource type="Texture2D" uid="uid://dappq2pf8sglq" path="res://assets/sprites/Icons/ui_btn_menu_view.png" id="14_s3dsw"]
+[ext_resource type="Texture2D" uid="uid://r58qdiax8ime" path="res://assets/sprites/Icons/bannerInferior.png" id="15_abdc4"]
+[ext_resource type="Texture2D" uid="uid://cjixnxopnbjwf" path="res://assets/sprites/Icons/play_strat_flower.png" id="16_wujih"]
+[ext_resource type="Texture2D" uid="uid://cfj5bcevhag60" path="res://assets/sprites/Icons/play_strat_blitz.png" id="17_0ig72"]
+[ext_resource type="Texture2D" uid="uid://boarolk3wjx33" path="res://assets/sprites/Icons/play_strat_setup.png" id="18_7wety"]
+[ext_resource type="Texture2D" uid="uid://daap2sxlcgn6" path="res://assets/sprites/Icons/play_strat_target.png" id="19_cufyd"]
+[ext_resource type="Texture2D" uid="uid://b5prcg5qlw5vy" path="res://assets/sprites/Icons/play_strat_wall.png" id="20_se5ie"]
+[ext_resource type="Texture2D" uid="uid://cydmk7hdho2xw" path="res://assets/sprites/Icons/ui_btn_xbox_y.png" id="21_se5ie"]
+[ext_resource type="Texture2D" uid="uid://t1gj8doimxu3" path="res://assets/sprites/Icons/ui_changuePlayer.png" id="22_e3h7r"]
+[ext_resource type="Texture2D" uid="uid://dehwmd2s3qy2e" path="res://assets/sprites/Icons/ui_pause_button.png" id="23_s3dsw"]
+[ext_resource type="Texture2D" uid="uid://ch2glg1kw27nv" path="res://assets/sprites/Icons/ui_btn_menu_start.png" id="24_l2q5l"]
 
 [node name="MatchPlayer" type="Node2D"]
 metadata/_edit_lock_ = true
 
 [node name="Background2" type="TextureRect" parent="."]
-visible = false
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 391.00003
-offset_top = -734.0
-offset_right = 1000.0
-offset_bottom = 868.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 316.0
+offset_top = -1066.0
+offset_right = 925.0
+offset_bottom = 536.0
 grow_horizontal = 2
 grow_vertical = 2
-scale = Vector2(0.71998096, 0.86441994)
+scale = Vector2(0.8631027, 1.036254)
+pivot_offset = Vector2(304.71463, 1086.6062)
 size_flags_horizontal = 8
 size_flags_vertical = 8
 texture = ExtResource("2_q31dk")
 stretch_mode = 3
-metadata/_edit_use_anchors_ = true
-metadata/_edit_lock_ = true
 
 [node name="MatchUI" type="CanvasLayer" parent="."]
 layer = -1
 
+[node name="CaptureFrame" type="ReferenceRect" parent="MatchUI"]
+visible = false
+offset_left = 410.0
+offset_top = -137.0
+offset_right = 449.20374
+offset_bottom = -94.13942
+scale = Vector2(10.789793, 16.779829)
+mouse_filter = 2
+
 [node name="Background" type="TextureRect" parent="MatchUI"]
 unique_name_in_owner = true
+visible = false
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -454.0
-offset_top = -669.0
-offset_right = -454.0
-offset_bottom = -669.0
+offset_left = -452.0
+offset_top = -810.0
+offset_right = -452.0
+offset_bottom = -810.0
 grow_horizontal = 2
 grow_vertical = 2
 scale = Vector2(1.6729074, 1.9270275)
@@ -46,7 +82,6 @@ texture = ExtResource("2_q31dk")
 expand_mode = 1
 stretch_mode = 5
 metadata/_edit_use_anchors_ = true
-metadata/_edit_lock_ = true
 
 [node name="HUDMain" type="Control" parent="MatchUI"]
 layout_mode = 3
@@ -57,6 +92,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="TopCenterAnchor" type="CenterContainer" parent="MatchUI/HUDMain"]
+visible = false
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -85,151 +121,363 @@ layout_mode = 1
 anchors_preset = 4
 anchor_top = 0.5
 anchor_bottom = 0.5
-offset_top = -20.0
-offset_right = 40.0
-offset_bottom = 20.0
+offset_left = 17.999998
+offset_top = -82.99997
+offset_right = 58.0
+offset_bottom = -42.99997
 grow_vertical = 2
+scale = Vector2(0.92290044, 0.92290044)
 
 [node name="StatsBackground" type="NinePatchRect" parent="MatchUI/HUDMain/LeftPanelAnchor"]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = -19.0
+offset_top = -270.00003
+offset_right = 60.754997
+offset_bottom = -103.43002
+scale = Vector2(3.373644, 3.0581808)
+texture = ExtResource("2_bbkrn")
 
-[node name="ProfileContainer" type="VBoxContainer" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground"]
+[node name="AttributesGrid" type="GridContainer" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground"]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="HeaderHBox" type="HBoxContainer" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/ProfileContainer"]
-layout_mode = 2
-
-[node name="AvatarCircle" type="TextureRect" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/ProfileContainer/HeaderHBox"]
-layout_mode = 2
-
-[node name="NameBanner" type="NinePatchRect" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/ProfileContainer/HeaderHBox"]
-layout_mode = 2
-
-[node name="StaminaBarContainer" type="VBoxContainer" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/ProfileContainer"]
-layout_mode = 2
-
-[node name="StaminaBar" type="TextureProgressBar" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/ProfileContainer/StaminaBarContainer"]
-layout_mode = 2
-
-[node name="AttributesGrid" type="GridContainer" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/ProfileContainer"]
-layout_mode = 2
+offset_left = 9.164852
+offset_top = 43.999176
+offset_right = 127.164825
+offset_bottom = 201.99918
+scale = Vector2(0.8833112, 0.75174314)
 columns = 2
 
-[node name="GuepardoIcon" type="TextureRect" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/ProfileContainer/AttributesGrid"]
+[node name="GuepardoIcon" type="TextureRect" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/AttributesGrid"]
+texture_filter = 1
 layout_mode = 2
+texture = ExtResource("3_abdc4")
+expand_mode = 3
+stretch_mode = 5
 
-[node name="VelocityLabel" type="Label" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/ProfileContainer/AttributesGrid"]
+[node name="VelocityLabel" type="Label" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/AttributesGrid"]
+texture_filter = 1
 layout_mode = 2
+text = "12"
+vertical_alignment = 1
 
-[node name="HandIcon" type="TextureRect" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/ProfileContainer/AttributesGrid"]
+[node name="HandIcon" type="TextureRect" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/AttributesGrid"]
 layout_mode = 2
+texture = ExtResource("4_p0nck")
+expand_mode = 3
+stretch_mode = 5
 
-[node name="HandsLabel" type="Label" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/ProfileContainer/AttributesGrid"]
+[node name="HandsLabel" type="Label" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/AttributesGrid"]
 layout_mode = 2
+text = "8"
 
-[node name="StaminaIcon" type="TextureRect" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/ProfileContainer/AttributesGrid"]
+[node name="StaminaIcon" type="TextureRect" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/AttributesGrid"]
 layout_mode = 2
+texture = ExtResource("5_8hk05")
+expand_mode = 3
+stretch_mode = 5
 
-[node name="StaminaLabel" type="Label" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/ProfileContainer/AttributesGrid"]
+[node name="StaminaLabel" type="Label" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/AttributesGrid"]
 layout_mode = 2
+text = "6"
 
-[node name="ArmIcon" type="TextureRect" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/ProfileContainer/AttributesGrid"]
+[node name="ArmIcon" type="TextureRect" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/AttributesGrid"]
 layout_mode = 2
+texture = ExtResource("6_66tsv")
+expand_mode = 3
+stretch_mode = 5
 
-[node name="ArmLabel" type="Label" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/ProfileContainer/AttributesGrid"]
+[node name="ArmLabel" type="Label" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/AttributesGrid"]
 layout_mode = 2
+text = "4"
 
-[node name="AgilityIcon" type="TextureRect" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/ProfileContainer/AttributesGrid"]
+[node name="AgilityIcon" type="TextureRect" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/AttributesGrid"]
 layout_mode = 2
+texture = ExtResource("7_7pxvo")
+expand_mode = 3
+stretch_mode = 5
 
-[node name="AgilityLabel" type="Label" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/ProfileContainer/AttributesGrid"]
+[node name="AgilityLabel" type="Label" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/AttributesGrid"]
 layout_mode = 2
+text = "9"
 
-[node name="BrainIcon" type="TextureRect" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/ProfileContainer/AttributesGrid"]
+[node name="BrainIcon" type="TextureRect" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/AttributesGrid"]
 layout_mode = 2
+texture = ExtResource("8_wujih")
+expand_mode = 3
+stretch_mode = 5
 
-[node name="BrainLabel" type="Label" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/ProfileContainer/AttributesGrid"]
+[node name="BrainLabel" type="Label" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/AttributesGrid"]
 layout_mode = 2
+text = "5"
 
-[node name="HidePanelBtn" type="Button" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/ProfileContainer"]
+[node name="PlayerContainer" type="HBoxContainer" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground"]
+layout_mode = 0
+offset_left = -0.14931232
+offset_top = 0.0648818
+offset_right = 117.850685
+offset_bottom = 38.06488
+scale = Vector2(0.74111533, 0.74111533)
+
+[node name="AvatarCircle" type="TextureRect" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PlayerContainer"]
 layout_mode = 2
+texture = ExtResource("9_e3h7r")
+expand_mode = 3
+stretch_mode = 5
 
-[node name="PromptsContainer" type="Control" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground"]
+[node name="Label" type="Label" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PlayerContainer"]
+layout_mode = 2
+text = "Idabel"
+
+[node name="StaminaBar" type="TextureProgressBar" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground"]
+layout_mode = 0
+offset_left = 9.164852
+offset_top = 26.992355
+offset_right = 71.164856
+offset_bottom = 39.992355
+texture_under = ExtResource("10_l2q5l")
+texture_progress = ExtResource("11_v8gw5")
+
+[node name="PromptsContainer" type="Control" parent="MatchUI/HUDMain"]
 anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = 280.0
+offset_top = 633.0
+offset_right = 280.0
+offset_bottom = 633.0
 
-[node name="LeftPrompts" type="VBoxContainer" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer"]
-visible = false
+[node name="LeftPrompts" type="VBoxContainer" parent="MatchUI/HUDMain/PromptsContainer"]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = -10.0
+offset_top = -212.0
+offset_right = 60.0
+offset_bottom = -125.0
+scale = Vector2(1.1945791, 1.1945791)
 
-[node name="Prompt_Panel" type="HBoxContainer" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer/LeftPrompts"]
-visible = false
+[node name="Prompt_Run" type="HBoxContainer" parent="MatchUI/HUDMain/PromptsContainer/LeftPrompts"]
 layout_mode = 2
 
-[node name="Boton_View" type="TextureRect" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer/LeftPrompts/Prompt_Panel"]
+[node name="Boton_B" type="TextureRect" parent="MatchUI/HUDMain/PromptsContainer/LeftPrompts/Prompt_Run"]
+layout_mode = 2
+texture = ExtResource("9_0ig72")
+expand_mode = 3
+stretch_mode = 5
+
+[node name="CorrerLabel" type="Label" parent="MatchUI/HUDMain/PromptsContainer/LeftPrompts/Prompt_Run"]
+layout_mode = 2
+text = "Run"
+
+[node name="Prompt_Aim" type="HBoxContainer" parent="MatchUI/HUDMain/PromptsContainer/LeftPrompts"]
 layout_mode = 2
 
-[node name="Prompt_Run" type="HBoxContainer" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer/LeftPrompts"]
-visible = false
+[node name="Left_Stick" type="TextureRect" parent="MatchUI/HUDMain/PromptsContainer/LeftPrompts/Prompt_Aim"]
 layout_mode = 2
+texture = ExtResource("10_7wety")
+expand_mode = 3
+stretch_mode = 5
 
-[node name="Boton_B" type="TextureRect" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer/LeftPrompts/Prompt_Run"]
+[node name="LeftSLabel" type="Label" parent="MatchUI/HUDMain/PromptsContainer/LeftPrompts/Prompt_Aim"]
 layout_mode = 2
+text = "Move"
 
-[node name="CorrerLabel" type="Label" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer/LeftPrompts/Prompt_Run"]
-layout_mode = 2
-
-[node name="Prompt_Aim" type="HBoxContainer" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer/LeftPrompts"]
-visible = false
-layout_mode = 2
-
-[node name="Left_Stick" type="TextureRect" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer/LeftPrompts/Prompt_Aim"]
-layout_mode = 2
-
-[node name="LeftSLabel" type="Label" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer/LeftPrompts/Prompt_Aim"]
-layout_mode = 2
-
-[node name="RightPrompts" type="VBoxContainer" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer"]
+[node name="RightPrompts" type="VBoxContainer" parent="MatchUI/HUDMain/PromptsContainer"]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = 628.0
+offset_top = -234.0
+offset_right = 772.0
+offset_bottom = -157.0
+scale = Vector2(1.1700692, 1.1700692)
 
-[node name="Prompt_Throw" type="HBoxContainer" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer/RightPrompts"]
-visible = false
+[node name="Prompt_Throw" type="HBoxContainer" parent="MatchUI/HUDMain/PromptsContainer/RightPrompts"]
 layout_mode = 2
 
-[node name="Boton_LT" type="TextureRect" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer/RightPrompts/Prompt_Throw"]
+[node name="Boton_RT" type="TextureRect" parent="MatchUI/HUDMain/PromptsContainer/RightPrompts/Prompt_Throw"]
+layout_mode = 2
+texture = ExtResource("11_cufyd")
+expand_mode = 3
+stretch_mode = 5
+
+[node name="LanzarLabel" type="Label" parent="MatchUI/HUDMain/PromptsContainer/RightPrompts/Prompt_Throw"]
+layout_mode = 2
+text = "Hold to launch"
+
+[node name="Prompt_Dodge" type="HBoxContainer" parent="MatchUI/HUDMain/PromptsContainer/RightPrompts"]
 layout_mode = 2
 
-[node name="LanzarLabel" type="Label" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer/RightPrompts/Prompt_Throw"]
+[node name="Btn_X" type="TextureRect" parent="MatchUI/HUDMain/PromptsContainer/RightPrompts/Prompt_Dodge"]
+layout_mode = 2
+texture = ExtResource("12_se5ie")
+expand_mode = 3
+stretch_mode = 5
+
+[node name="DodgeLabel" type="Label" parent="MatchUI/HUDMain/PromptsContainer/RightPrompts/Prompt_Dodge"]
+layout_mode = 2
+text = "Dodge"
+
+[node name="Prompt_Move" type="HBoxContainer" parent="MatchUI/HUDMain/PromptsContainer/RightPrompts"]
 layout_mode = 2
 
-[node name="Prompt_Dodge" type="HBoxContainer" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer/RightPrompts"]
-visible = false
+[node name="Right_Stick" type="TextureRect" parent="MatchUI/HUDMain/PromptsContainer/RightPrompts/Prompt_Move"]
+layout_mode = 2
+texture = ExtResource("13_e3h7r")
+expand_mode = 3
+stretch_mode = 5
+
+[node name="MoveLabel" type="Label" parent="MatchUI/HUDMain/PromptsContainer/RightPrompts/Prompt_Move"]
+layout_mode = 2
+text = "Aim"
+
+[node name="Prompt_Panel" type="HBoxContainer" parent="MatchUI/HUDMain/PromptsContainer"]
+layout_mode = 0
+offset_left = -52.000008
+offset_top = -385.00003
+offset_right = 9.999992
+offset_bottom = -323.00003
+scale = Vector2(0.6762599, 0.7739471)
+
+[node name="Boton_View" type="TextureRect" parent="MatchUI/HUDMain/PromptsContainer/Prompt_Panel"]
+texture_filter = 1
+layout_mode = 2
+texture = ExtResource("14_s3dsw")
+stretch_mode = 4
+
+[node name="PlaysPanel" type="NinePatchRect" parent="MatchUI/HUDMain"]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -70.0
+offset_top = -41.0
+offset_right = 57.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 0
+scale = Vector2(6.033141, 20.705853)
+pivot_offset = Vector2(63.553493, 16.654343)
+texture = ExtResource("15_abdc4")
+
+[node name="PlaysHbox" type="HBoxContainer" parent="MatchUI/HUDMain/PlaysPanel"]
+layout_mode = 0
+offset_left = 7.980713
+offset_top = 10.521851
+offset_right = 1148.9807
+offset_bottom = 276.52185
+scale = Vector2(0.09496825, 0.030630354)
+
+[node name="PlaySlot" type="VBoxContainer" parent="MatchUI/HUDMain/PlaysPanel/PlaysHbox"]
 layout_mode = 2
 
-[node name="Btn_X" type="TextureRect" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer/RightPrompts/Prompt_Dodge"]
+[node name="PlayIcon" type="TextureRect" parent="MatchUI/HUDMain/PlaysPanel/PlaysHbox/PlaySlot"]
+layout_mode = 2
+texture = ExtResource("16_wujih")
+
+[node name="PlayLabel" type="Label" parent="MatchUI/HUDMain/PlaysPanel/PlaysHbox/PlaySlot"]
 layout_mode = 2
 
-[node name="DodgeLabel" type="Label" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer/RightPrompts/Prompt_Dodge"]
+[node name="PlaySlot2" type="VBoxContainer" parent="MatchUI/HUDMain/PlaysPanel/PlaysHbox"]
 layout_mode = 2
 
-[node name="Prompt_Move" type="HBoxContainer" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer/RightPrompts"]
-visible = false
+[node name="PlayIcon" type="TextureRect" parent="MatchUI/HUDMain/PlaysPanel/PlaysHbox/PlaySlot2"]
+layout_mode = 2
+texture = ExtResource("17_0ig72")
+
+[node name="PlayLabel" type="Label" parent="MatchUI/HUDMain/PlaysPanel/PlaysHbox/PlaySlot2"]
 layout_mode = 2
 
-[node name="Right_Stick" type="TextureRect" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer/RightPrompts/Prompt_Move"]
+[node name="PlaySlot3" type="VBoxContainer" parent="MatchUI/HUDMain/PlaysPanel/PlaysHbox"]
 layout_mode = 2
 
-[node name="MoveLabel" type="Label" parent="MatchUI/HUDMain/LeftPanelAnchor/StatsBackground/PromptsContainer/RightPrompts/Prompt_Move"]
+[node name="PlayIcon" type="TextureRect" parent="MatchUI/HUDMain/PlaysPanel/PlaysHbox/PlaySlot3"]
 layout_mode = 2
+texture = ExtResource("18_7wety")
+
+[node name="PlayLabel" type="Label" parent="MatchUI/HUDMain/PlaysPanel/PlaysHbox/PlaySlot3"]
+layout_mode = 2
+
+[node name="PlaySlot4" type="VBoxContainer" parent="MatchUI/HUDMain/PlaysPanel/PlaysHbox"]
+layout_mode = 2
+
+[node name="PlayIcon" type="TextureRect" parent="MatchUI/HUDMain/PlaysPanel/PlaysHbox/PlaySlot4"]
+layout_mode = 2
+texture = ExtResource("19_cufyd")
+
+[node name="PlayLabel" type="Label" parent="MatchUI/HUDMain/PlaysPanel/PlaysHbox/PlaySlot4"]
+layout_mode = 2
+
+[node name="PlaySlot5" type="VBoxContainer" parent="MatchUI/HUDMain/PlaysPanel/PlaysHbox"]
+layout_mode = 2
+
+[node name="PlayIcon" type="TextureRect" parent="MatchUI/HUDMain/PlaysPanel/PlaysHbox/PlaySlot5"]
+layout_mode = 2
+texture = ExtResource("20_se5ie")
+
+[node name="PlayLabel" type="Label" parent="MatchUI/HUDMain/PlaysPanel/PlaysHbox/PlaySlot5"]
+layout_mode = 2
+
+[node name="SelectPrompt" type="HBoxContainer" parent="MatchUI/HUDMain/PlaysPanel"]
+layout_mode = 0
+offset_left = 4.0
+offset_right = 9.0
+offset_bottom = 27.0
+
+[node name="A_Button" type="TextureRect" parent="MatchUI/HUDMain/PlaysPanel/SelectPrompt"]
+layout_mode = 2
+
+[node name="A_Label" type="Label" parent="MatchUI/HUDMain/PlaysPanel/SelectPrompt"]
+layout_mode = 2
+
+[node name="LeftAction" type="Control" parent="MatchUI/HUDMain"]
+anchors_preset = 0
+offset_top = 505.0
+offset_right = 288.0
+offset_bottom = 848.0
+scale = Vector2(0.76397866, 0.76397866)
+size_flags_horizontal = 0
+size_flags_vertical = 0
+
+[node name="Y_Button" type="TextureRect" parent="MatchUI/HUDMain/LeftAction"]
+z_index = 1
+layout_mode = 0
+offset_left = 171.47075
+offset_top = 124.34902
+offset_right = 459.47076
+offset_bottom = 176.34903
+pivot_offset = Vector2(144.57881, 23.897339)
+texture = ExtResource("21_se5ie")
+stretch_mode = 5
+
+[node name="TextureRect" type="TextureRect" parent="MatchUI/HUDMain/LeftAction"]
+layout_mode = 0
+offset_top = 26.0
+offset_right = 288.0
+offset_bottom = 286.0
+pivot_offset = Vector2(38.23572, 38.522766)
+texture = ExtResource("22_e3h7r")
+
+[node name="RightAction" type="Control" parent="MatchUI/HUDMain"]
+anchors_preset = 0
+offset_left = 1092.0
+offset_top = 567.0
+offset_right = 1097.0
+offset_bottom = 910.0
+
+[node name="PauseIcon" type="TextureRect" parent="MatchUI/HUDMain/RightAction"]
+layout_mode = 0
+offset_left = -30.0
+offset_top = -28.000008
+offset_right = 233.0
+offset_bottom = 210.0
+scale = Vector2(0.7207579, 0.7207579)
+texture = ExtResource("23_s3dsw")
+
+[node name="Start_Button" type="TextureRect" parent="MatchUI/HUDMain/RightAction"]
+layout_mode = 0
+offset_left = -69.0
+offset_top = 41.0
+offset_right = -17.0
+offset_bottom = 93.0
+scale = Vector2(0.72849286, 0.72849286)
+texture = ExtResource("24_l2q5l")
 
 [node name="NodesContainer" type="Node2D" parent="."]
 metadata/_edit_lock_ = true
@@ -255,11 +503,3 @@ script = ExtResource("3_ttpbx")
 route_line = NodePath("../RouteLine")
 preview_line = NodePath("../PreviewLine")
 metadata/_edit_lock_ = true
-
-[node name="CaptureFrame" type="ReferenceRect" parent="."]
-offset_left = 408.0
-offset_top = 4.0
-offset_right = 447.20374
-offset_bottom = 46.860577
-scale = Vector2(10.789793, 16.779829)
-mouse_filter = 2

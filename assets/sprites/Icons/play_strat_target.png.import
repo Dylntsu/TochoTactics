@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dtdtb8yuqwc3h"
-path="res://.godot/imported/btn_RT 1.png-6025f7dea8a5ab2becb67e508d4e5f78.ctex"
+uid="uid://daap2sxlcgn6"
+path="res://.godot/imported/play_strat_target.png-86612740dfd7c6bbab8da03f1a64b273.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/Icons/btn_RT 1.png"
-dest_files=["res://.godot/imported/btn_RT 1.png-6025f7dea8a5ab2becb67e508d4e5f78.ctex"]
+source_file="res://assets/sprites/Icons/play_strat_target.png"
+dest_files=["res://.godot/imported/play_strat_target.png-86612740dfd7c6bbab8da03f1a64b273.ctex"]
 
 [params]
 

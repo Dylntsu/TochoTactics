@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bkq5oh7y8aa4k"
-path="res://.godot/imported/velocity_icon 1.png-64a1411f921b246f93d067dfa0763cab.ctex"
+uid="uid://bhalwrunmsa6q"
+path="res://.godot/imported/ui_btn_xbox_b.png-a3099231ac4d41e0695d27438eaa77f9.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/Icons/velocity_icon 1.png"
-dest_files=["res://.godot/imported/velocity_icon 1.png-64a1411f921b246f93d067dfa0763cab.ctex"]
+source_file="res://assets/sprites/Icons/ui_btn_xbox_b.png"
+dest_files=["res://.godot/imported/ui_btn_xbox_b.png-a3099231ac4d41e0695d27438eaa77f9.ctex"]
 
 [params]
 

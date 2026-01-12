@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dvn1nhg6kls4v"
-path="res://.godot/imported/arm_icon 1.png-9aef8f71384e8a5ae6077029eba89c80.ctex"
+uid="uid://5kie5syyc1vu"
+path="res://.godot/imported/icon_attr_stamina.png-225e273c781fe7991d3cf2dd4e0a6b3d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/Icons/arm_icon 1.png"
-dest_files=["res://.godot/imported/arm_icon 1.png-9aef8f71384e8a5ae6077029eba89c80.ctex"]
+source_file="res://assets/sprites/Icons/icon_attr_stamina.png"
+dest_files=["res://.godot/imported/icon_attr_stamina.png-225e273c781fe7991d3cf2dd4e0a6b3d.ctex"]
 
 [params]
 

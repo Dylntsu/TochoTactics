@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dh5gv1fn72v4f"
-path="res://.godot/imported/btn_y_xbox 1.png-2d3a675d7a001cb91467c05edde7c31a.ctex"
+uid="uid://cghphnakd73kh"
+path="res://.godot/imported/icon_attr_agility.png-84fe92ca3a04eed735b26ba3c94ec011.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/Icons/btn_y_xbox 1.png"
-dest_files=["res://.godot/imported/btn_y_xbox 1.png-2d3a675d7a001cb91467c05edde7c31a.ctex"]
+source_file="res://assets/sprites/Icons/icon_attr_agility.png"
+dest_files=["res://.godot/imported/icon_attr_agility.png-84fe92ca3a04eed735b26ba3c94ec011.ctex"]
 
 [params]
 

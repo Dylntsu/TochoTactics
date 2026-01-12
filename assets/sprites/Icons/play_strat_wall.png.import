@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cc11nn3233ela"
-path="res://.godot/imported/Group 1.png-82955021d9e83024878d99308137a724.ctex"
+uid="uid://b5prcg5qlw5vy"
+path="res://.godot/imported/play_strat_wall.png-8f8b8e46e0c0bfb8d1cc1b3928cbb66b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/Icons/Group 1.png"
-dest_files=["res://.godot/imported/Group 1.png-82955021d9e83024878d99308137a724.ctex"]
+source_file="res://assets/sprites/Icons/play_strat_wall.png"
+dest_files=["res://.godot/imported/play_strat_wall.png-8f8b8e46e0c0bfb8d1cc1b3928cbb66b.ctex"]
 
 [params]
 

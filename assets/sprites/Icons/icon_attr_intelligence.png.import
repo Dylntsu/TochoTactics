@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cdxe7u0iblm5y"
-path="res://.godot/imported/btn_X 1.png-764b0947b6bd163d09af860254770473.ctex"
+uid="uid://kabl4fgat525"
+path="res://.godot/imported/icon_attr_intelligence.png-66edcfad80f8fa58500e47a83cf9313a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/Icons/btn_X 1.png"
-dest_files=["res://.godot/imported/btn_X 1.png-764b0947b6bd163d09af860254770473.ctex"]
+source_file="res://assets/sprites/Icons/icon_attr_intelligence.png"
+dest_files=["res://.godot/imported/icon_attr_intelligence.png-66edcfad80f8fa58500e47a83cf9313a.ctex"]
 
 [params]
 
