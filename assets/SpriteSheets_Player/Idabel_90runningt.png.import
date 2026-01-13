@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://br6wc8y8ydyix"
-path="res://.godot/imported/face_05.png-3f90378752591bf623eb3ebe3e2b2293.ctex"
+uid="uid://dkyyg8b30ln7l"
+path="res://.godot/imported/Idabel_90runningt.png-29f95f16c89ff855e5e1475bce82bcc9.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/players/face_05.png"
-dest_files=["res://.godot/imported/face_05.png-3f90378752591bf623eb3ebe3e2b2293.ctex"]
+source_file="res://assets/SpriteSheets_Player/Idabel_90runningt.png"
+dest_files=["res://.godot/imported/Idabel_90runningt.png-29f95f16c89ff855e5e1475bce82bcc9.ctex"]
 
 [params]
 
@@ -23,8 +23,8 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
-mipmaps/limit=0
+mipmaps/generate=false
+mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""
 process/channel_remap/red=0

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ckrpuaq8gq675"
-path="res://.godot/imported/face_02.png-e78994be4d4a979b0a52bfd1a9171c9b.ctex"
+uid="uid://cu345htwaydsd"
+path="res://.godot/imported/idabel_back_idle-Sheet.png-c6a010588e1a88e6b9268fedb4f9180f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/players/face_02.png"
-dest_files=["res://.godot/imported/face_02.png-e78994be4d4a979b0a52bfd1a9171c9b.ctex"]
+source_file="res://assets/SpriteSheets_Player/idabel_back_idle-Sheet.png"
+dest_files=["res://.godot/imported/idabel_back_idle-Sheet.png-c6a010588e1a88e6b9268fedb4f9180f.ctex"]
 
 [params]
 
@@ -23,8 +23,8 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
-mipmaps/limit=0
+mipmaps/generate=false
+mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""
 process/channel_remap/red=0

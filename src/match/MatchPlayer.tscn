@@ -1,7 +1,8 @@
-[gd_scene load_steps=29 format=3 uid="uid://ckn0rdmja4fma"]
+[gd_scene load_steps=31 format=3 uid="uid://ckn0rdmja4fma"]
 
+[ext_resource type="Script" uid="uid://cd3n4d8e0xdq5" path="res://src/match/match_player.gd" id="1_1r1rj"]
 [ext_resource type="Texture2D" uid="uid://18qfwy5glsvh" path="res://assets/sprites/Icons/ui_panel_main_stats.png" id="2_bbkrn"]
-[ext_resource type="Texture2D" uid="uid://dl8pi2jccrcsr" path="res://assets/sprites/tocho_tactics_background.png" id="2_q31dk"]
+[ext_resource type="PackedScene" uid="uid://bt8x7frykrts7" path="res://src/match/match_player_body.tscn" id="2_fsv0t"]
 [ext_resource type="Texture2D" uid="uid://ccsu1se83blnq" path="res://assets/sprites/Icons/icon_attr_velocity.png" id="3_abdc4"]
 [ext_resource type="Script" uid="uid://v5bcnk3p7uvc" path="res://src/playbook/components/RouteManager.gd" id="3_ttpbx"]
 [ext_resource type="Texture2D" uid="uid://ccuqwqpv5iq43" path="res://assets/sprites/Icons/icon_attr_hands.png" id="4_p0nck"]
@@ -10,7 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://cghphnakd73kh" path="res://assets/sprites/Icons/icon_attr_agility.png" id="7_7pxvo"]
 [ext_resource type="Texture2D" uid="uid://kabl4fgat525" path="res://assets/sprites/Icons/icon_attr_intelligence.png" id="8_wujih"]
 [ext_resource type="Texture2D" uid="uid://bhalwrunmsa6q" path="res://assets/sprites/Icons/ui_btn_xbox_b.png" id="9_0ig72"]
-[ext_resource type="Texture2D" uid="uid://ckrpuaq8gq675" path="res://assets/players/face_02.png" id="9_e3h7r"]
+[ext_resource type="Texture2D" uid="uid://ckrpuaq8gq675" path="res://assets/players_icons/face_02.png" id="9_e3h7r"]
 [ext_resource type="Texture2D" uid="uid://bmfp3o5usg22h" path="res://assets/sprites/Icons/ui_btn_xbox_ls.png" id="10_7wety"]
 [ext_resource type="Texture2D" uid="uid://bdc2gahkudm1d" path="res://assets/sprites/Icons/staminaBar_under.png" id="10_l2q5l"]
 [ext_resource type="Texture2D" uid="uid://ckg43tgnoqp1h" path="res://assets/sprites/Icons/ui_btn_xbox_rt.png" id="11_cufyd"]
@@ -28,60 +29,23 @@
 [ext_resource type="Texture2D" uid="uid://t1gj8doimxu3" path="res://assets/sprites/Icons/ui_changuePlayer.png" id="22_e3h7r"]
 [ext_resource type="Texture2D" uid="uid://dehwmd2s3qy2e" path="res://assets/sprites/Icons/ui_pause_button.png" id="23_s3dsw"]
 [ext_resource type="Texture2D" uid="uid://ch2glg1kw27nv" path="res://assets/sprites/Icons/ui_btn_menu_start.png" id="24_l2q5l"]
+[ext_resource type="Texture2D" uid="uid://tefjtorpt812" path="res://assets/sprites/campo.png" id="29_v8gw5"]
 
 [node name="MatchPlayer" type="Node2D"]
+script = ExtResource("1_1r1rj")
+player_scene = ExtResource("2_fsv0t")
 metadata/_edit_lock_ = true
-
-[node name="Background2" type="TextureRect" parent="."]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = 316.0
-offset_top = -1066.0
-offset_right = 925.0
-offset_bottom = 536.0
-grow_horizontal = 2
-grow_vertical = 2
-scale = Vector2(0.8631027, 1.036254)
-pivot_offset = Vector2(304.71463, 1086.6062)
-size_flags_horizontal = 8
-size_flags_vertical = 8
-texture = ExtResource("2_q31dk")
-stretch_mode = 3
 
 [node name="MatchUI" type="CanvasLayer" parent="."]
 layer = -1
 
 [node name="CaptureFrame" type="ReferenceRect" parent="MatchUI"]
-visible = false
 offset_left = 410.0
 offset_top = -137.0
 offset_right = 449.20374
 offset_bottom = -94.13942
 scale = Vector2(10.789793, 16.779829)
 mouse_filter = 2
-
-[node name="Background" type="TextureRect" parent="MatchUI"]
-unique_name_in_owner = true
-visible = false
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -452.0
-offset_top = -810.0
-offset_right = -452.0
-offset_bottom = -810.0
-grow_horizontal = 2
-grow_vertical = 2
-scale = Vector2(1.6729074, 1.9270275)
-size_flags_horizontal = 8
-size_flags_vertical = 8
-texture = ExtResource("2_q31dk")
-expand_mode = 1
-stretch_mode = 5
-metadata/_edit_use_anchors_ = true
 
 [node name="HUDMain" type="Control" parent="MatchUI"]
 layout_mode = 3
@@ -245,9 +209,9 @@ offset_bottom = 633.0
 
 [node name="LeftPrompts" type="VBoxContainer" parent="MatchUI/HUDMain/PromptsContainer"]
 layout_mode = 0
-offset_left = -10.0
+offset_left = -26.0
 offset_top = -212.0
-offset_right = 60.0
+offset_right = 44.0
 offset_bottom = -125.0
 scale = Vector2(1.1945791, 1.1945791)
 
@@ -428,58 +392,64 @@ layout_mode = 2
 
 [node name="LeftAction" type="Control" parent="MatchUI/HUDMain"]
 anchors_preset = 0
-offset_top = 505.0
-offset_right = 288.0
-offset_bottom = 848.0
-scale = Vector2(0.76397866, 0.76397866)
+offset_left = -21.000004
+offset_top = 501.0
+offset_right = 267.0
+offset_bottom = 844.0
+scale = Vector2(0.8715848, 0.8715848)
 size_flags_horizontal = 0
 size_flags_vertical = 0
 
 [node name="Y_Button" type="TextureRect" parent="MatchUI/HUDMain/LeftAction"]
 z_index = 1
 layout_mode = 0
-offset_left = 171.47075
-offset_top = 124.34902
-offset_right = 459.47076
-offset_bottom = 176.34903
+offset_left = 44.50386
+offset_top = 189.79587
+offset_right = 332.50385
+offset_bottom = 241.79587
 pivot_offset = Vector2(144.57881, 23.897339)
 texture = ExtResource("21_se5ie")
 stretch_mode = 5
 
 [node name="TextureRect" type="TextureRect" parent="MatchUI/HUDMain/LeftAction"]
 layout_mode = 0
-offset_top = 26.0
-offset_right = 288.0
-offset_bottom = 286.0
+offset_left = 53.666412
+offset_top = 1.4305115e-05
+offset_right = 341.6664
+offset_bottom = 260.0
+scale = Vector2(0.8754632, 0.8754632)
 pivot_offset = Vector2(38.23572, 38.522766)
 texture = ExtResource("22_e3h7r")
 
 [node name="RightAction" type="Control" parent="MatchUI/HUDMain"]
 anchors_preset = 0
-offset_left = 1092.0
-offset_top = 567.0
-offset_right = 1097.0
-offset_bottom = 910.0
+offset_left = 1064.0
+offset_top = 581.99994
+offset_right = 1069.0
+offset_bottom = 924.99994
+scale = Vector2(1.1254145, 1.1254145)
 
 [node name="PauseIcon" type="TextureRect" parent="MatchUI/HUDMain/RightAction"]
 layout_mode = 0
-offset_left = -30.0
-offset_top = -28.000008
-offset_right = 233.0
-offset_bottom = 210.0
+offset_left = -31.0
+offset_top = -69.0
+offset_right = 232.0
+offset_bottom = 169.0
 scale = Vector2(0.7207579, 0.7207579)
 texture = ExtResource("23_s3dsw")
 
 [node name="Start_Button" type="TextureRect" parent="MatchUI/HUDMain/RightAction"]
 layout_mode = 0
-offset_left = -69.0
-offset_top = 41.0
-offset_right = -17.0
-offset_bottom = 93.0
+offset_left = 41.0
+offset_top = 81.0
+offset_right = 93.0
+offset_bottom = 133.0
 scale = Vector2(0.72849286, 0.72849286)
 texture = ExtResource("24_l2q5l")
 
 [node name="NodesContainer" type="Node2D" parent="."]
+unique_name_in_owner = true
+z_index = 5
 metadata/_edit_lock_ = true
 
 [node name="RouteLine" type="Line2D" parent="."]
@@ -503,3 +473,12 @@ script = ExtResource("3_ttpbx")
 route_line = NodePath("../RouteLine")
 preview_line = NodePath("../PreviewLine")
 metadata/_edit_lock_ = true
+
+[node name="Campo" type="TextureRect" parent="."]
+z_index = -21
+offset_left = 340.0
+offset_top = -547.0
+offset_right = 386.0
+offset_bottom = -457.0
+scale = Vector2(12.352348, 12.352348)
+texture = ExtResource("29_v8gw5")
