@@ -1,9 +1,18 @@
-[gd_scene load_steps=4 format=3 uid="uid://bmpr647hc8cdl"]
+[gd_scene load_steps=6 format=3 uid="uid://bmpr647hc8cdl"]
 
 [ext_resource type="Script" uid="uid://b88mwkhoeiapq" path="res://src/playbook/player/Player.gd" id="1_enjsy"]
+[ext_resource type="Shader" uid="uid://su2w1337auny" path="res://assets/shaders/SelectionShader.gdshader" id="2_t2gbo"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_57wkv"]
 radius = 22.803509
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_t2gbo"]
+resource_local_to_scene = true
+shader = ExtResource("2_t2gbo")
+shader_parameter/line_color = Color(1, 1, 1, 1)
+shader_parameter/line_thickness = 1.0
+shader_parameter/speed = 2.0
+shader_parameter/is_selected = false
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_enjsy"]
 load_path = "res://.godot/imported/face_03.png-283476eb19f533442b266bd42e0f7e57.ctex"
@@ -24,6 +33,7 @@ metadata/_edit_lock_ = true
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture_filter = 1
+material = SubResource("ShaderMaterial_t2gbo")
 texture = SubResource("CompressedTexture2D_enjsy")
 metadata/_edit_lock_ = true
 

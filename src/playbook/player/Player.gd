@@ -29,6 +29,9 @@ var limit_rect: Rect2 = Rect2()
 var _active_tween: Tween
 var is_playing: bool = false
 
+#roles
+var role: String = "WR" 
+
 # Referencia al nodo visual
 @onready var visual_panel = $Panel
 
@@ -201,3 +204,19 @@ func _process(_delta):
 		# Mientras se mueve, redondeamos la posición para evitar el efecto de "temblor" o deformación
 		global_position = target_pos.round()
 		moved.emit(self)
+
+func set_role(new_role: String):
+	role = new_role
+	# Opcional: Cambiar el color del número o icono según el rol
+	if role == "QB":
+		%NumberLabel.text = "QB"
+	elif role == "CENTER":
+		%NumberLabel.text = "C"
+	else:
+		%NumberLabel.text = str(player_id)
+
+func set_selected(value: bool):
+	# Accedemos al material del sprite (asumiendo que se llama FaceSprite)
+	var mat = $Sprite2D.material as ShaderMaterial
+	if mat:
+		mat.set_shader_parameter("is_selected", value)

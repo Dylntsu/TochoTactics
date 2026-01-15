@@ -54,7 +54,11 @@ var player_textures = [
 	preload("res://assets/players_icons/face_04.png"),
 	preload("res://assets/players_icons/face_05.png"),
 ]
-
+#roles
+var qb_player_id: int = -1
+var center_player_id: int = -1
+#jjugador seleccionado
+var selected_player_id: int = -1
 # ESTADO LOCAL
 var grid_points: Array[Vector2] = []
 var spacing: int = 0
@@ -66,6 +70,9 @@ var _active_play_positions: Dictionary = {}
 # ==============================================================================
 # CICLO DE VIDA
 # ==============================================================================
+func get_selected_player_id() -> int:
+	return selected_player_id
+
 func _ready():
 	get_viewport().size_changed.connect(_on_viewport_resized)
 	
@@ -154,7 +161,7 @@ func render_formation():
 	var formation_end_x = field_rect.position.x + field_rect.size.x * (1.0 - formation_margin_right)
 	var formation_width = formation_end_x - formation_start_x
 	
-	var limit_top_y = get_offensive_zone_limit_y()
+	var limit_top_y = get_offensive_zone_limit_y() # La línea de No Running Zone
 	var limit_bottom_y = field_rect.end.y - (spacing * 0.2)
 	
 	var limit_rect = Rect2(formation_start_x, limit_top_y, formation_width, limit_bottom_y - limit_top_y)
@@ -164,6 +171,7 @@ func render_formation():
 	if player_count > 1: 
 		player_step = formation_width / (player_count - 1)
 	
+	# El índice central que por defecto solía ser el QB
 	var qb_index = int(player_count / 2)
 	
 	# Creación y configuración de jugadores
@@ -171,17 +179,16 @@ func render_formation():
 		var player = player_scene.instantiate()
 		player.player_id = i
 		
-		# ---LÓGICA DE IDENTIDAD VISUAL ---
-		# Asignamos una textura del array 'player_textures' usando el ID
+		# --- LÓGICA DE IDENTIDAD VISUAL ---
 		if player_textures.size() > 0:
 			var tex = player_textures[i % player_textures.size()]
-			# Configuramos el sprite y el número en el Player.gd
 			player.setup_player_visual(tex, i)
 		
-		# Cálculo de posición por defecto
+		# --- POSICIONAMIENTO ---
 		var pos_x = formation_start_x + (i * player_step) if player_count > 1 else limit_rect.get_center().x
 		var final_y = formation_y
 		
+		# Aplicamos el desplazamiento de profundidad si es el índice central por defecto
 		if i == qb_index:
 			final_y += spacing * qb_depth_offset 
 			
@@ -189,25 +196,47 @@ func render_formation():
 		final_y = clamp(final_y, limit_rect.position.y + safety_margin, limit_rect.end.y - safety_margin)
 		pos_x = clamp(pos_x, limit_rect.position.x + safety_margin, limit_rect.end.x - safety_margin)
 		
-		# Memoria de posición- Respetamos si el jugador fue movido o cargado previamente
+		# Memoria de posición: Respetamos roles de Centro/QB guardados previamente
 		if _active_play_positions.has(i):
 			player.position = _active_play_positions[i]
 		else:
 			player.position = Vector2(pos_x, final_y)
 		
-		# Configuración de límites y guardado de base
+		# --- CONFIGURACIÓN Y SEÑALES ---
 		player.limit_rect = limit_rect 
 		player.save_starting_position() 
 		
-		# Conexiones de señales
+		# Para detectar a qué jugador hacemos clic para designar roles
+		if not player.input_event.is_connected(_on_player_input_event):
+			player.input_event.connect(_on_player_input_event.bind(player))
+		
 		player.start_route_requested.connect(_on_player_start_route_requested)
 		player.moved.connect(_on_player_moved)
 		
 		if not player.interaction_ended.is_connected(_on_child_action_finished):
 			player.interaction_ended.connect(_on_child_action_finished)
 		
-		# Agregamos al contenedor al final para asegurar que setup ya terminó
+		# Agregamos al contenedor
 		nodes_container.add_child(player)
+	
+	if has_method("draw_snap_line"):
+		draw_snap_line()
+
+func draw_snap_line():
+	if center_player_id != -1 and qb_player_id != -1:
+		var center_node = _get_player_by_id(center_player_id)
+		var qb_node = _get_player_by_id(qb_player_id)
+		
+		if center_node and qb_node:
+			# Usamos el route_manager para dibujar una ruta fija naranja
+			var points = PackedVector2Array([center_node.position, qb_node.position])
+			route_manager.create_fixed_route(center_player_id, points, Color.ORANGE)
+
+func _get_player_by_id(id: int):
+	for child in nodes_container.get_children():
+		if "player_id" in child and child.player_id == id:
+			return child
+	return null
 
 func get_offensive_zone_limit_y() -> float:
 	if grid_points.is_empty(): 
@@ -444,3 +473,77 @@ func get_current_state_as_data() -> PlayData:
 
 func _on_child_action_finished(_node = null):
 	content_changed.emit()
+	
+func assign_role_to_player(p_id: int, new_role: String):
+	if grid_points.is_empty(): return
+	
+	var bounds = calculate_grid_bounds()
+	var center_x = bounds.get_center().x
+	
+	var base_limit_index = int(grid_size.y - offensive_limit_row_offset)
+	
+	var center_row_index = base_limit_index + 1
+	var qb_row_index = base_limit_index + 2
+	
+	var center_y = grid_points[center_row_index].y
+	var qb_y = grid_points[qb_row_index].y
+	
+	for child in nodes_container.get_children():
+		if child is Area2D and "player_id" in child:
+			if child.player_id == p_id:
+				if new_role == "CENTER":
+					child.position = Vector2(center_x, center_y)
+					center_player_id = p_id
+				elif new_role == "QB":
+					child.position = Vector2(center_x, qb_y)
+					qb_player_id = p_id
+				
+				# Guardamos para que el autoguardado lo procese
+				_active_play_positions[child.player_id] = child.position
+	
+	draw_snap_line()
+	content_changed.emit()
+	
+func _auto_position_special_roles():
+	var bounds = calculate_grid_bounds()
+	var center_x = bounds.get_center().x
+	var scrimmage_y = get_offensive_zone_limit_y() # La línea de No Running
+	
+	for child in nodes_container.get_children():
+		if child is Area2D and "player_id" in child:
+			if child.player_id == center_player_id:
+				# justo en la línea
+				child.position = Vector2(center_x, scrimmage_y + (spacing * 0.2))
+				child.set_role("CENTER")
+			elif child.player_id == qb_player_id:
+				# QB una yarda y media atrás
+				child.position = Vector2(center_x, scrimmage_y + (spacing * qb_depth_offset))
+				child.set_role("QB")
+			
+			# Guardar en memoria para que el autoguardado lo detecte
+			_active_play_positions[child.player_id] = child.position
+
+func _show_toast_in_editor(message: String):
+	print("[Editor]: ", message)
+	# Emitimos la señal para que la UI también pueda reaccionar si quiere
+	if has_signal("content_changed"):
+		content_changed.emit()
+
+func _on_player_input_event(_viewport, event, _shape_idx, player_node):
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		# Deseleccionamos visualmente a todos los jugadores previos
+		for child in nodes_container.get_children():
+			if child.has_method("set_selected"):
+				child.set_selected(false)
+		
+		# Seleccionamos al nuevo jugador
+		selected_player_id = player_node.player_id
+		player_node.set_selected(true) # Activamos el shader
+		
+		_show_toast_in_editor("Jugador " + str(selected_player_id) + " seleccionado")
+
+func deselect_all_players():
+	for child in nodes_container.get_children():
+		if child.has_method("set_selected"):
+			child.set_selected(false)
+	selected_player_id = -1

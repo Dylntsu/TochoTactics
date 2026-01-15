@@ -363,3 +363,18 @@ func try_start_route(player_id: int, start_pos: Vector2) -> bool:
 	# se actualizan los visuales
 	update_visuals()
 	return true
+	
+func create_fixed_route(player_id: int, points: PackedVector2Array, color: Color):
+	var line: Line2D
+	if active_routes.has(player_id):
+		line = active_routes[player_id]
+	else:
+		line = Line2D.new()
+		line.width = 4.0
+		line.default_color = color
+		line.texture_mode = Line2D.LINE_TEXTURE_TILE
+		# Hacerla punteada si tienes el asset, si no, déjala sólida
+		add_child(line)
+		active_routes[player_id] = line
+	
+	line.points = points

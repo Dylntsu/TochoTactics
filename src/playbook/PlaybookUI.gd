@@ -92,6 +92,16 @@ func _setup_connections() -> void:
 	if is_instance_valid(%BtnReset):
 		if not %BtnReset.pressed.is_connected(_on_reset_button_pressed):
 			%BtnReset.pressed.connect(_on_reset_button_pressed)
+	# 8. Botón Designar QB
+	if is_instance_valid(%BtnSetQB):
+		if not %BtnSetQB.pressed.is_connected(_on_set_qb_pressed):
+			%BtnSetQB.pressed.connect(_on_set_qb_pressed)
+	
+	# 9. Botón Designar Centro
+	if is_instance_valid(%BtnSetCenter):
+		if not %BtnSetCenter.pressed.is_connected(_on_set_center_pressed):
+			%BtnSetCenter.pressed.connect(_on_set_center_pressed)
+	
 
 # ==============================================================================
 # MANEJO DE EVENTOS (HANDLERS)
@@ -403,3 +413,15 @@ func _perform_silent_save() -> void:
 		_show_toast("Guardado", Color(0, 1, 0, 0.7)) # Verde transparente
 	else:
 		_show_toast("Error guardando", Color.RED)
+		
+func _on_set_qb_pressed():
+	var selected_id = editor.get_selected_player_id() # Debes implementar esto
+	if selected_id != -1:
+		editor.assign_role_to_player(selected_id, "QB")
+		_show_toast("QB Designado", Color.GOLD)
+
+func _on_set_center_pressed():
+	var selected_id = editor.get_selected_player_id()
+	if selected_id != -1:
+		editor.assign_role_to_player(selected_id, "CENTER")
+		_show_toast("Centro Designado", Color.ORANGE)

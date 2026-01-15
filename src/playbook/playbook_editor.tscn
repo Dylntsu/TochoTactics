@@ -181,6 +181,17 @@ custom_minimum_size = Vector2(120, 120)
 layout_mode = 2
 text = "Probar Jugada"
 
+[node name="BtnSetQB" type="Button" parent="UI_Layer/MainLayout/HBoxContainer/RightPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Designar a QuarterBack"
+
+[node name="BtnSetCenter" type="Button" parent="UI_Layer/MainLayout/HBoxContainer/RightPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Desingar a Centro
+"
+
 [node name="SavePlayPopup" type="ConfirmationDialog" parent="UI_Layer"]
 unique_name_in_owner = true
 title = "Guardar Jugada"
