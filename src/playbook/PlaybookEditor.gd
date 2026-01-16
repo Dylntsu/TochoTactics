@@ -254,19 +254,18 @@ func _input(event):
 	var mouse_pos = get_local_mouse_position()
 	
 	if event is InputEventMouseButton:
+		# CLICK IZQUIERD0- Exclusivo para rutas
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 			if route_manager.is_editing:
 				route_manager.handle_input(mouse_pos)
 			else:
 				_try_click_existing_route_end(mouse_pos)
 		
+		# CLICK DERECH0 - Gestión y cancelar rutas
 		elif event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
-			route_manager.finish_route()
-			
-	elif event is InputEventMouseMotion:
-		route_manager.update_preview(mouse_pos)
-		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and route_manager.is_editing:
-			route_manager.handle_input(mouse_pos)
+			# Si estábamos dibujando, el primer clic derecho cancela la ruta
+			if route_manager.is_editing:
+				route_manager.finish_route()
 
 func _try_click_existing_route_end(mouse_pos: Vector2):
 	var snap_range = route_manager._snap_distance 
@@ -530,17 +529,17 @@ func _show_toast_in_editor(message: String):
 		content_changed.emit()
 
 func _on_player_input_event(_viewport, event, _shape_idx, player_node):
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		# Deseleccionamos visualmente a todos los jugadores previos
-		for child in nodes_container.get_children():
-			if child.has_method("set_selected"):
-				child.set_selected(false)
+	# Cambiamos MOUSE_BUTTON_LEFT por MOUSE_BUTTON_RIGHT
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
+		deselect_all_players()
 		
-		# Seleccionamos al nuevo jugador
+		#Registramos el nuevo ID seleccionado
 		selected_player_id = player_node.player_id
-		player_node.set_selected(true) # Activamos el shader
 		
-		_show_toast_in_editor("Jugador " + str(selected_player_id) + " seleccionado")
+		# se activa el shader solo en este jugador
+		player_node.set_selected(true)
+		
+		_show_toast_in_editor("Jugador " + str(selected_player_id) + " seleccionado para roles")
 
 func deselect_all_players():
 	for child in nodes_container.get_children():
