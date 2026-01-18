@@ -8,7 +8,6 @@ extends Node2D
 @onready var background = $CanvasLayer/Background 
 @onready var capture_frame = $CaptureFrame
 
-# NUEVO: Referencia al panel estático en la UI 
 @onready var stats_panel = %StatsPanel 
 
 signal content_changed # señal para avisar a la UI
@@ -108,7 +107,7 @@ func _ready():
 # GESTIÓN DE SELECCIÓN Y STATS (Lógica Estática)
 # ==============================================================================
 
-# Esta función se llama cuando haces Click Derecho en un jugador
+# Esta función se llama cuando se hace Click Derecho en un jugador
 func _on_player_input_event(_viewport, event, _shape_idx, player_node):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
 		
@@ -160,20 +159,22 @@ func _on_viewport_resized():
 	rebuild_editor()
 
 func rebuild_editor():
+	# Obtener el rect global del CaptureFrame directamente
+	var frame_rect = capture_frame.get_global_rect()
+	
 	var bounds = calculate_grid_bounds()
 	var grid_data = GridService.calculate_grid(bounds, grid_size)
-	
 	grid_points = grid_data.points
 	spacing = grid_data.spacing
 	
 	render_grid_visuals()
 	render_formation() 
 	
-	if capture_frame:
-		var frame_rect = capture_frame.get_global_rect()
-		route_manager.set_field_limits(frame_rect)
-	
-	route_manager.setup(grid_points, spacing, background.get_global_rect())
+	# CORRECCIÓN DE LÍMITES:
+	if route_manager:
+		# Forzamos al manager a usar el CaptureFrame como límite de dibujo
+		route_manager.limit_rect = frame_rect
+		route_manager.setup(grid_points, spacing, frame_rect)
 
 func calculate_grid_bounds() -> Rect2:
 	var field_rect = background.get_global_rect()
@@ -198,26 +199,37 @@ func render_grid_visuals():
 		nodes_container.add_child(marker)
 
 func render_formation():
+	# Limpieza de nodos anteriores
 	for child in nodes_container.get_children():
 		if child.name.begins_with("PlayerStart") or child is Area2D:
 			child.queue_free()
 
-	var field_rect = background.get_global_rect()
-	var formation_start_x = field_rect.position.x + (field_rect.size.x * formation_margin_left)
-	var formation_end_x = field_rect.position.x + field_rect.size.x * (1.0 - formation_margin_right)
-	var formation_width = formation_end_x - formation_start_x
+	if player_count <= 0: return
+
+	# 1. Definir el "Lienzo"
+	var frame_rect = capture_frame.get_global_rect()
+	var center_x = frame_rect.get_center().x
 	
-	var limit_top_y = get_offensive_zone_limit_y()
-	var limit_bottom_y = field_rect.end.y - (spacing * 0.2)
-	var limit_rect = Rect2(formation_start_x, limit_top_y, formation_width, limit_bottom_y - limit_top_y)
-	var formation_y = limit_rect.end.y - (spacing * formation_y_offset) 
+	# Margen de seguridad
+	var available_width = frame_rect.size.x * 0.90 
 	
-	var player_step = 0
-	if player_count > 1: 
-		player_step = formation_width / (player_count - 1)
+	# 2. Lógica de Espaciado Adaptativo
+	var ideal_separation = spacing * 1.5
+	var final_separation = ideal_separation
 	
-	var qb_index = int(player_count / 2)
+	if player_count > 1:
+		var total_ideal_width = (player_count - 1) * ideal_separation
+		if total_ideal_width > available_width:
+			final_separation = available_width / (player_count - 1)
 	
+	# Recalculamos el inicio
+	var total_formation_width = (player_count - 1) * final_separation
+	var start_x = center_x - (total_formation_width / 2.0)
+	
+	# Todos usarán esta misma altura base.
+	var desired_y = frame_rect.end.y - (spacing * 1.5)
+	var clamped_y = clamp(desired_y, frame_rect.position.y, frame_rect.end.y - (spacing * 0.5))
+		
 	for i in range(player_count):
 		var player = player_scene.instantiate()
 		player.player_id = i
@@ -225,16 +237,13 @@ func render_formation():
 		if team_database.size() > 0:
 			player.data = team_database[i % team_database.size()]
 		
-		var pos_x = formation_start_x + (i * player_step) if player_count > 1 else limit_rect.get_center().x
-		var final_y = formation_y
+		# --- POSICIONAMIENTO ---
+		var pos_x = start_x + (i * final_separation)
+		# CAMBIO PRINCIPAL: Todos usan exactamente la misma Y
+		var pos_y = clamped_y 
+
 		
-		if i == qb_index:
-			final_y += spacing * qb_depth_offset 
-			
-		var safety_margin = spacing * 0.4
-		final_y = clamp(final_y, limit_rect.position.y + safety_margin, limit_rect.end.y - safety_margin)
-		pos_x = clamp(pos_x, limit_rect.position.x + safety_margin, limit_rect.end.x - safety_margin)
-		
+		# Prioridad a la persistencia
 		if _active_play_positions.has(i):
 			var saved_pos_data = _active_play_positions[i]
 			if saved_pos_data is Dictionary and saved_pos_data.has("position"):
@@ -242,26 +251,25 @@ func render_formation():
 			elif saved_pos_data is Vector2:
 				player.position = saved_pos_data
 		else:
-			player.position = Vector2(pos_x, final_y)
+			player.position = Vector2(pos_x, pos_y)
 		
-		player.limit_rect = limit_rect 
-		player.save_starting_position() 
+		# --- LÍMITES FÍSICOS ---
+		player.limit_rect = frame_rect 
+		player.save_starting_position()
 		
 		if player.data and player.data.portrait:
 			player.setup_player_visual(player.data.portrait, i)
 		
-		# CONEXIONES DE JUGADOR
+		# Conexiones
 		if not player.input_event.is_connected(_on_player_input_event):
 			player.input_event.connect(_on_player_input_event.bind(player))
-		
 		player.start_route_requested.connect(_on_player_start_route_requested)
 		player.moved.connect(_on_player_moved)
-		
 		if not player.interaction_ended.is_connected(_on_child_action_finished):
 			player.interaction_ended.connect(_on_child_action_finished)
 		
 		nodes_container.add_child(player)
-
+		
 func _get_player_by_id(id: int):
 	for child in nodes_container.get_children():
 		if "player_id" in child and child.player_id == id:
@@ -283,15 +291,26 @@ func _input(event):
 	var mouse_pos = get_local_mouse_position()
 	
 	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-			if route_manager.is_editing:
-				route_manager.handle_input(mouse_pos)
-			else:
-				_try_click_existing_route_end(mouse_pos)
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			if event.pressed:
+				if route_manager.is_editing:
+					route_manager.handle_input(mouse_pos)
+				else:
+					_try_click_existing_route_end(mouse_pos)
 		
 		elif event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
 			if route_manager.is_editing:
 				route_manager.finish_route()
+
+	# ESTA SECCIÓN FUE RESTAURADA:
+	elif event is InputEventMouseMotion:
+		if route_manager.is_editing:
+			# 1. Muestra la línea elástica (Preview)
+			route_manager.update_preview(mouse_pos) 
+			
+			# 2. Permite dibujar arrastrando (si el click izquierdo está hundido)
+			if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+				route_manager.handle_input(mouse_pos)
 
 func _try_click_existing_route_end(mouse_pos: Vector2):
 	var snap_range = route_manager._snap_distance 

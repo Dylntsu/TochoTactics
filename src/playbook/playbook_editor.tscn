@@ -1,10 +1,11 @@
-[gd_scene load_steps=8 format=3 uid="uid://uby6wv405ia6"]
+[gd_scene load_steps=9 format=3 uid="uid://uby6wv405ia6"]
 
 [ext_resource type="Script" uid="uid://cgiy3uu4qb8w8" path="res://src/playbook/PlaybookEditor.gd" id="1_ybrfa"]
 [ext_resource type="Texture2D" uid="uid://dl8pi2jccrcsr" path="res://assets/sprites/tocho_tactics_background.png" id="2_4aaqw"]
 [ext_resource type="Script" uid="uid://v5bcnk3p7uvc" path="res://src/playbook/components/RouteManager.gd" id="3_sigk0"]
 [ext_resource type="Script" uid="uid://b8arbw6hrqmw7" path="res://src/playbook/PlaybookUI.gd" id="4_mdejl"]
 [ext_resource type="PackedScene" uid="uid://bf1khj84lp83c" path="res://src/playbook/player/player_context_menu.tscn" id="5_unia6"]
+[ext_resource type="Texture2D" uid="uid://p2h53a8mxwno" path="res://assets/sprites/Icons/play_draft_icon.png" id="5_uu6s6"]
 [ext_resource type="Script" uid="uid://bc54gkxxvck7j" path="res://src/playbook/player/PlayerContextMenu.gd" id="6_mkvnw"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_sigk0"]
@@ -87,6 +88,7 @@ metadata/_edit_lock_ = true
 layer = 10
 script = ExtResource("4_mdejl")
 editor = NodePath("..")
+draft_icon_texture = ExtResource("5_uu6s6")
 
 [node name="MainLayout" type="MarginContainer" parent="UI_Layer"]
 anchors_preset = 15

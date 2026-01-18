@@ -15,6 +15,9 @@ const SAVE_DIR = "user://plays/"
 @onready var preview_rect = %PreviewRect  
 @onready var play_name_label = %PlayNameLabel 
 
+@export_group("Assets UI")
+@export var draft_icon_texture: Texture2D 
+
 # Referencias Botones Laterales
 @onready var btn_new: Button = %BtnNew
 @onready var btn_save: Button = %BtnSave
@@ -72,10 +75,6 @@ func _setup_connections() -> void:
 	if is_instance_valid(%BtnPlay): %BtnPlay.pressed.connect(_on_play_preview_pressed)
 	if is_instance_valid(%BtnReset): %BtnReset.pressed.connect(_on_reset_button_pressed)
 	
-	# 4. Roles (Opcional, si los tienes en botones aparte)
-	if is_instance_valid(%BtnSetQB): %BtnSetQB.pressed.connect(_on_set_qb_pressed)
-	if is_instance_valid(%BtnSetCenter): %BtnSetCenter.pressed.connect(_on_set_center_pressed)
-	
 	# 5. Timer
 	if autosave_timer: autosave_timer.timeout.connect(_on_autosave_timer_timeout)
 
@@ -84,17 +83,37 @@ func _setup_connections() -> void:
 # ==============================================================================
 func _on_prev_play():
 	if saved_plays.is_empty(): return
-	# Guardar silenciosamente antes de cambiar
-	_perform_silent_save()
 	
-	current_play_index = (current_play_index - 1 + saved_plays.size()) % saved_plays.size()
+	# Si estamos en una jugada YA guardada (index >= 0), guardamos cambios
+	if current_play_index != -1:
+		_perform_silent_save()
+	else:
+		# Si estamos en borrador (-1), al cambiar simplemente se descarta
+		_show_toast("Borrador descartado", Color.ORANGE)
+
+	# Cálculo de índice seguro
+	if current_play_index == -1:
+		# Si venimos de un borrador, vamos a la última jugada guardada
+		current_play_index = saved_plays.size() - 1
+	else:
+		current_play_index = (current_play_index - 1 + saved_plays.size()) % saved_plays.size()
+		
 	_select_play_by_index(current_play_index)
 
 func _on_next_play():
 	if saved_plays.is_empty(): return
-	_perform_silent_save()
 	
-	current_play_index = (current_play_index + 1) % saved_plays.size()
+	if current_play_index != -1:
+		_perform_silent_save()
+	else:
+		_show_toast("Borrador descartado", Color.ORANGE)
+	
+	if current_play_index == -1:
+		# Si venimos de un borrador, vamos a la primera jugada guardada
+		current_play_index = 0
+	else:
+		current_play_index = (current_play_index + 1) % saved_plays.size()
+		
 	_select_play_by_index(current_play_index)
 
 func _select_play_by_index(index: int):
@@ -110,11 +129,24 @@ func _select_play_by_index(index: int):
 	_update_selector_visuals()
 
 func _update_selector_visuals():
-	if saved_plays.is_empty():
+	# Caso 1: No hay jugadas ni borrador activo
+	if saved_plays.is_empty() and current_play_index != -1:
 		play_name_label.text = "Sin Jugadas"
 		if preview_rect: preview_rect.texture = null
 		return
+	
+	# Caso 2: Estamos en modo BORRADOR (Nueva Jugada no guardada)
+	if current_play_index == -1:
+		play_name_label.text = _selected_play.name 
 		
+		if preview_rect:
+			if draft_icon_texture:
+				preview_rect.texture = draft_icon_texture
+			else:
+				preview_rect.texture = null 
+		return
+
+	# Caso 3: Jugada Guardada (Comportamiento normal)
 	var play = saved_plays[current_play_index]
 	play_name_label.text = play.name
 	
@@ -122,7 +154,7 @@ func _update_selector_visuals():
 		if play.preview_texture:
 			preview_rect.texture = play.preview_texture
 		else:
-			preview_rect.texture = null # O poner textura "No Preview"
+			preview_rect.texture = null
 
 # ==============================================================================
 # GESTIÓN DE ARCHIVOS
@@ -148,24 +180,26 @@ func _load_all_plays_from_disk() -> void:
 func _on_new_play_requested() -> void:
 	if not _is_editor_ready(): return
 	
-	# Guardar la actual antes de crear nueva
-	_perform_silent_save()
+	# 1. Gestión del estado anterior
+	if current_play_index != -1:
+		_perform_silent_save()
 	
-	editor.unlock_all_players()
+	# 2. SOLUCIÓN AL BUG DE BLOQUEO:
+	# En lugar de solo unlock_all_players, usamos unlock_editor_for_editing
+	editor.unlock_editor_for_editing() 
+	
+	# 3. Limpieza de la jugada visual
 	editor.reset_current_play()
 	
-	var new_play = PlayData.new()
-	new_play.name = "Nueva Jugada %d" % (saved_plays.size() + 1)
+	# 4. Creación del Borrador en Memoria Volátil
+	var new_draft = PlayData.new()
+	new_draft.name = "Nueva Jugada (Borrador)"
 	
-	saved_plays.append(new_play)
-	current_play_index = saved_plays.size() - 1 # Ir a la última 
+	current_play_index = -1 
+	_selected_play = new_draft
 	
-	_selected_play = new_play
 	_update_selector_visuals()
-	_show_toast("Nueva Jugada Creada", Color.CYAN)
-	
-	# Trigger autoguardado inicial para crear el archivo
-	_perform_silent_save()
+	_show_toast("Modo Borrador: Edición Habilitada", Color.YELLOW)
 
 func _on_save_button_pressed() -> void:
 	if _is_editor_ready():
@@ -183,22 +217,27 @@ func _on_save_confirmed() -> void:
 	if not _pending_play: return
 
 	var new_name = name_input.text.strip_edges()
+	var is_new_save = (current_play_index == -1) # Detectamos si venimos de borrador
+	
 	if not new_name.is_empty():
-		# Si cambiamos el nombre, borramos el archivo viejo para no duplicar
-		var old_safe_name = _pending_play.name.validate_filename()
-		var old_path = SAVE_DIR + old_safe_name + ".res"
-		if FileAccess.file_exists(old_path) and new_name != _pending_play.name:
-			DirAccess.remove_absolute(old_path)
-			
+		# Lógica para renombrar archivo si ya existía
 		_pending_play.name = new_name
 
 	var safe_filename = _pending_play.name.validate_filename()
+	# Validar que no sobrescriba algo existente si es nuevo
 	var save_path = SAVE_DIR + safe_filename + ".res"
 	
 	var error = ResourceSaver.save(_pending_play, save_path)
+	
 	if error == OK:
+		if is_new_save:
+			saved_plays.append(_pending_play)
+			current_play_index = saved_plays.size() - 1
+			_show_toast("¡Borrador Guardado!", Color.GREEN)
+		else:
+			_show_toast("Cambios Guardados", Color.GREEN)
+			
 		_update_selector_visuals()
-		_show_toast("¡Guardado!", Color.GREEN)
 	else:
 		_show_toast("Error al guardar", Color.RED)
 
@@ -242,11 +281,13 @@ func _on_autosave_timer_timeout() -> void:
 	_perform_silent_save()
 
 func _perform_silent_save() -> void:
-	if _selected_play == null: return
+	# Si no hay jugada o esta en MODO BORRADOR (-1), NO guardamos automáticamente
+	if _selected_play == null or current_play_index == -1: 
+		return
+		
 	if not _is_editor_ready(): return
 	
 	var fresh_data = editor.get_current_state_as_data()
-	
 	_selected_play.formations = fresh_data.formations
 	_selected_play.routes = fresh_data.routes
 	
@@ -296,7 +337,6 @@ func _on_reset_button_pressed():
 		editor.reset_formation_state()
 
 func _on_set_qb_pressed():
-	# Implementa la lógica si tienes el botón
 	pass
 
 func _on_set_center_pressed():
