@@ -217,6 +217,7 @@ texture_under = ExtResource("10_l2q5l")
 texture_progress = ExtResource("11_v8gw5")
 
 [node name="PromptsContainer" type="Control" parent="MatchUI/HUDMain"]
+visible = false
 anchors_preset = 0
 offset_left = 280.0
 offset_top = 633.0
@@ -428,6 +429,7 @@ size_flags_horizontal = 0
 size_flags_vertical = 0
 
 [node name="Y_Button" type="TextureRect" parent="MatchUI/HUDMain/LeftAction"]
+visible = false
 z_index = 1
 layout_mode = 0
 offset_left = 44.50386
@@ -466,6 +468,7 @@ scale = Vector2(0.7207579, 0.7207579)
 texture = ExtResource("23_s3dsw")
 
 [node name="Start_Button" type="TextureRect" parent="MatchUI/HUDMain/RightAction"]
+visible = false
 layout_mode = 0
 offset_left = 43.66577
 offset_top = 81.0
