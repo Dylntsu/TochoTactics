@@ -1,6 +1,7 @@
 extends Resource
 class_name PlayData
-
+#modo de jugada
+@export var is_precision: bool = false
 # Nombre de la jugada
 @export var name: String = "Nueva Jugada"
 

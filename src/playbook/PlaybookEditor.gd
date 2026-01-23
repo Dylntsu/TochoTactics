@@ -198,8 +198,13 @@ func render_grid_visuals():
 		marker.color = Color(1, 1, 1, 0.5)
 		marker.position = pos - (marker.size / 2)
 		
-		# grupo para manipularlos todos juntos
+		# Agregamos al grupo
 		marker.add_to_group("GridMarkers") 
+		
+		# --- CORRECCIÓN DE BLINDAJE ---
+		# Aplicamos la visibilidad ANTES de añadirlo al árbol
+		marker.visible = not is_precision_mode_active
+		# ------------------------------
 		
 		nodes_container.add_child(marker)
 
@@ -211,12 +216,12 @@ func render_formation():
 
 	if player_count <= 0: return
 
-	# Definir el lienzo
+	# 1. Definir el "Lienzo"
 	var frame_rect = capture_frame.get_global_rect()
 	var center_x = frame_rect.get_center().x
 	var available_width = frame_rect.size.x * 0.90 
 	
-	# Lógica de Espaciado Adaptativo
+	# 2. Lógica de Espaciado Adaptativo
 	var ideal_separation = spacing * 1.5
 	var final_separation = ideal_separation
 	
@@ -228,12 +233,12 @@ func render_formation():
 	var total_formation_width = (player_count - 1) * final_separation
 	var start_x = center_x - (total_formation_width / 2.0)
 	
-	# Definir Altura Base 
+	# 3. Definir Altura Base (Punto de Instanciación)
 	var desired_y = frame_rect.end.y - (spacing * 1.5)
 	var clamped_y = clamp(desired_y, frame_rect.position.y, frame_rect.end.y - (spacing * 0.5))
 	
-	# --- AJUSTE DE LÍMITE EXACTO ---
-	var scrimmage_line_y = clamped_y 
+	# Usamos round() aquí también para que el límite sea un entero
+	var scrimmage_line_y = round(clamped_y) 
 	
 	# Definimos el rectángulo de restricción
 	var scrimmage_limit_rect = Rect2(
@@ -250,18 +255,20 @@ func render_formation():
 		if team_database.size() > 0:
 			player.data = team_database[i % team_database.size()]
 		
-		# --- POSICIONAMIENTO ---
-		var pos_x = start_x + (i * final_separation)
-		var pos_y = clamped_y 
+		# Calculamos en float, pero redondeamos inmediatamente al entero más cercano
+		var raw_x = start_x + (i * final_separation)
+		var pos_x = round(raw_x)
+		var pos_y = round(clamped_y) 
 		
 		# Prioridad a la persistencia
 		if _active_play_positions.has(i):
 			var saved_pos_data = _active_play_positions[i]
 			if saved_pos_data is Dictionary and saved_pos_data.has("position"):
-				player.position = saved_pos_data.position
+				player.position = saved_pos_data.position.round()
 			elif saved_pos_data is Vector2:
-				player.position = saved_pos_data
+				player.position = saved_pos_data.round()
 		else:
+			# Usamos las coordenadas redondeadas calculadas arriba
 			player.position = Vector2(pos_x, pos_y)
 		
 		# --- APLICACIÓN DEL LÍMITE ---
@@ -280,6 +287,17 @@ func render_formation():
 			player.interaction_ended.connect(_on_child_action_finished)
 		
 		nodes_container.add_child(player)
+
+func _force_visual_sync():
+	# 1. Forzamos el redibujado de la rejilla final
+	queue_redraw()
+	
+	# 2. Forzamos la visibilidad de los nodos grandes (GridMarkers)
+	# Usamos set_visible explícitamente en el grupo
+	if is_precision_mode_active:
+		get_tree().call_group("GridMarkers", "hide")
+	else:
+		get_tree().call_group("GridMarkers", "show")
 
 func _get_player_by_id(id: int):
 	for child in nodes_container.get_children():
@@ -315,7 +333,7 @@ func _input(event):
 
 	elif event is InputEventMouseMotion:
 		if route_manager.is_editing:
-			# Muestrael el Preview
+			# Muestrael Preview
 			route_manager.update_preview(mouse_pos) 
 			
 			# Permite dibujar arrastrando 
@@ -348,7 +366,7 @@ func _on_player_start_route_requested(player_node):
 	if route_manager.is_editing and route_manager.current_player_id != pid:
 		route_manager.finish_route()
 	
-	# Iniciamos la nueva ruta (QB incluido)
+	# Iniciamos la nueva ruta 
 	route_manager.try_start_route(pid, player_node.get_route_anchor())
 
 # Calcula la posición ideal en el Grid para un rol específico
@@ -410,6 +428,10 @@ func get_play_resource() -> PlayData:
 	var new_play = PlayData.new()
 	new_play.timestamp = Time.get_unix_time_from_system()
 	
+	if "is_precision" in new_play:
+		new_play.is_precision = is_precision_mode_active 
+	else:
+		new_play.meta_data = {"precision": is_precision_mode_active}
 	for player in nodes_container.get_children():
 		if "player_id" in player:
 			var player_entry = {
@@ -427,23 +449,45 @@ func get_play_resource() -> PlayData:
 	return new_play
 
 func get_play_preview_texture() -> ImageTexture:
+	# Esperamos al final del frame para que todo esté dibujado
 	await get_tree().process_frame
 	await get_tree().process_frame
 	
-	var screenshot: Image = get_viewport().get_texture().get_image()
-	var frame_rect: Rect2 = capture_frame.get_global_rect()
-	var viewport_size = get_viewport().get_visible_rect().size
+	# obtener la imagen completa de lo que ve la cámara
+	var viewport = get_viewport()
+	var screenshot: Image = viewport.get_texture().get_image()
 	
-	var x = clamp(frame_rect.position.x, 0, viewport_size.x)
-	var y = clamp(frame_rect.position.y, 0, viewport_size.y)
-	var w = min(frame_rect.size.x, viewport_size.x - x)
-	var h = min(frame_rect.size.y, viewport_size.y - y)
-	
-	var final_region = Rect2(x, y, w, h)
+	var canvas_transform = get_canvas_transform()
+	var viewport_transform = viewport.get_final_transform() # Transformación global de la ventana
+	var global_rect = capture_frame.get_global_rect()
 
-	if w > 0 and h > 0:
-		var cropped_img = screenshot.get_region(final_region)
-		cropped_img.resize(200, 250, Image.INTERPOLATE_LANCZOS)
+	# Aproximación segura usando transformaciones de viewport:
+	var screen_rect_pos = (viewport_transform * canvas_transform) * global_rect.position
+	var screen_rect_end = (viewport_transform * canvas_transform) * global_rect.end
+	var screen_size = screen_rect_end - screen_rect_pos
+	
+	# Definir la región final asegurando que sea números enteros
+	var crop_region = Rect2(screen_rect_pos, screen_size).abs()
+	
+	# Validación de seguridad para no salirnos de la imagen
+	var img_size = Vector2(screenshot.get_width(), screenshot.get_height())
+	
+	# Ajustamos para que la región no sea negativa ni se salga
+	crop_region.position.x = clamp(crop_region.position.x, 0, img_size.x)
+	crop_region.position.y = clamp(crop_region.position.y, 0, img_size.y)
+	
+	# Ajustamos el ancho/alto si se sale por la derecha/abajo
+	if crop_region.position.x + crop_region.size.x > img_size.x:
+		crop_region.size.x = img_size.x - crop_region.position.x
+	if crop_region.position.y + crop_region.size.y > img_size.y:
+		crop_region.size.y = img_size.y - crop_region.position.y
+		
+	# 4. Recortar
+	if crop_region.size.x > 0 and crop_region.size.y > 0:
+		var cropped_img = screenshot.get_region(crop_region)
+		
+		cropped_img.resize(200, 300, Image.INTERPOLATE_LANCZOS)
+		
 		return ImageTexture.create_from_image(cropped_img)
 	
 	return null
@@ -451,15 +495,35 @@ func get_play_preview_texture() -> ImageTexture:
 func load_play_data(play_data) -> void:
 	print("--- INICIANDO CARGA DE JUGADA ---")
 	
-	# Aseguramos limpieza inicial
 	unlock_editor_for_editing() 
 	stop_all_animations()
 	if route_manager:
 		route_manager.clear_all_routes()
 	
+	# 1. LEER EL MODO 
+	var saved_precision = false
+	if play_data is Resource:
+		if "is_precision" in play_data:
+			saved_precision = play_data.is_precision
+		elif "meta_data" in play_data and play_data.meta_data.has("precision"):
+			saved_precision = play_data.meta_data["precision"]
+	elif play_data is Dictionary:
+		saved_precision = play_data.get("is_precision", false)
+	
+	# 2. ESTABLECER LA VARIABLE INTERNA
+	is_precision_mode_active = saved_precision
+	
+	# Sincronizamos managers
+	if route_manager:
+		route_manager.set_precision_mode(saved_precision)
+	
+	# Avisamos a la UI
+	if has_signal("precision_mode_changed"):
+		emit_signal("precision_mode_changed", saved_precision)
+	
+	# 3. LEER DATOS RESTANTES
 	var positions_data = {}
 	var routes_data = {}
-	
 	if play_data is Resource:
 		if "formations" in play_data: positions_data = play_data.formations
 		if "routes" in play_data: routes_data = play_data.routes
@@ -469,22 +533,26 @@ func load_play_data(play_data) -> void:
 	
 	_active_play_positions = positions_data.duplicate()
 	
-	# Reconstruimos los jugadores visualmente
+	# 4. RECONSTRUIR EL EDITOR
 	rebuild_editor()
 	
-	# Cargamos las rutas en el Manager
+	# 5. CARGAR RUTAS
 	if route_manager:
 		route_manager.load_routes_from_data(routes_data)
 	
-	# Asignamos las rutas a los jugadores y actualizamos el origen visual
 	for child in nodes_container.get_children():
 		if child is Area2D and "player_id" in child:
 			var p_id = child.player_id
-			
 			if routes_data.has(p_id):
 				child.current_route = routes_data[p_id]
 				if route_manager:
 					route_manager.update_route_origin(p_id, child.get_route_anchor(), true)
+	
+	# Esperamos un frame para que Godot termine de calcular tamaños
+	await get_tree().process_frame
+	# Forzamos la sincronización visual final
+	_force_visual_sync()
+
 func play_current_play():
 	var all_routes = route_manager.get_all_routes() 
 	
@@ -533,6 +601,8 @@ func unlock_editor_for_editing():
 
 func get_current_state_as_data() -> PlayData:
 	var data = PlayData.new()
+	
+	# Guardar Formaciones
 	var formations = {}
 	for player in nodes_container.get_children():
 		if player is Area2D:
@@ -541,7 +611,18 @@ func get_current_state_as_data() -> PlayData:
 				"resource_path": player.data.resource_path if player.data else ""
 			}
 	data.formations = formations
+	
+	# Guardar Rutas
 	data.routes = route_manager.get_all_routes()
+	
+	# --- GUARDAR MODO DE DIBUJO ---
+	# Asignamos directamente. Si PlayData tiene la variable, funciona.
+	# Si no, usamos set() para intentar asignación dinámica.
+	data.set("is_precision", is_precision_mode_active)
+	
+	# Backup en metadata por seguridad
+	data.set("meta_data", {"precision": is_precision_mode_active})
+		
 	return data
 
 func _on_child_action_finished(_node = null):
@@ -564,7 +645,7 @@ func assign_role_to_player(source_pid: int, new_role: String):
 	
 	var incumbent_pid = -1
 	
-	# Aquí definimos quién es el dueño actual del puesto
+	# definimos quién es el dueño actual del puesto
 	match new_role:
 		"CENTER": incumbent_pid = center_player_id
 		"QB": incumbent_pid = qb_player_id

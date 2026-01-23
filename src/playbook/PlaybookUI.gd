@@ -48,9 +48,8 @@ func _ready() -> void:
 	
 	# Conexión Editor -> UI 
 	if is_instance_valid(editor):
-		if editor.has_signal("content_changed"):
-			if not editor.content_changed.is_connected(_on_editor_content_changed):
-				editor.content_changed.connect(_on_editor_content_changed)
+		if editor.has_signal("precision_mode_changed"):
+			editor.precision_mode_changed.connect(_on_editor_precision_changed)
 	
 	# Carga inicial
 	_load_all_plays_from_disk()
@@ -59,6 +58,16 @@ func _ready() -> void:
 		_select_play_by_index(0)
 	else:
 		_update_selector_visuals()
+
+# Función para recibir el cambio desde el código
+func _on_editor_precision_changed(is_active: bool):
+	if is_instance_valid(btn_precision):
+		# Actualizamos el estado visual del botón sin disparar la señal de vuelta
+		btn_precision.set_pressed_no_signal(is_active)
+		# Actualizamos variables locales
+		_is_shift_pressed = false # Reseteamos shift por seguridad
+		# Feedback visual 
+		btn_precision.modulate = Color.YELLOW if is_active else Color.WHITE
 
 func _setup_connections() -> void:
 	# 1. Botones del Carrusel 
@@ -171,16 +180,17 @@ func _select_play_by_index(index: int):
 	_update_selector_visuals()
 
 func _update_selector_visuals():
-	# Caso 1: No hay jugadas ni borrador activo
-	if saved_plays.is_empty() and current_play_index != -1:
+	#Verificamos si es null antes de intentar leer nada.
+	if _selected_play == null:
 		play_name_label.text = "Sin Jugadas"
 		if preview_rect: preview_rect.texture = null
 		return
-	
-	# Caso 2: Estamos en modo BORRADOR
+
+	# MODO BORRADOR (Index -1 pero con objeto activo)
 	if current_play_index == -1:
 		play_name_label.text = _selected_play.name 
 		
+		# Icono de Draft
 		if preview_rect:
 			if draft_icon_texture:
 				preview_rect.texture = draft_icon_texture
@@ -188,7 +198,12 @@ func _update_selector_visuals():
 				preview_rect.texture = null 
 		return
 
-	# Caso 3: Jugada Guardada
+	#JUGADA GUARDADA
+	# Verificación extra de seguridad para índices fuera de rango
+	if saved_plays.is_empty() or current_play_index >= saved_plays.size():
+		play_name_label.text = "Error de Índice"
+		return
+
 	var play = saved_plays[current_play_index]
 	play_name_label.text = play.name
 	
@@ -217,7 +232,8 @@ func _load_all_plays_from_disk() -> void:
 	
 	# Si no hay jugadas, creamos una por defecto vacía para no romper el carrusel
 	if saved_plays.is_empty():
-		pass
+			current_play_index = -1
+			_selected_play = null
 
 func _on_new_play_requested() -> void:
 	if not _is_editor_ready(): return
@@ -226,7 +242,6 @@ func _on_new_play_requested() -> void:
 	if current_play_index != -1:
 		_perform_silent_save()
 	
-	# En lugar de solo unlock_all_players, usamos unlock_editor_for_editing
 	editor.unlock_editor_for_editing() 
 	
 	# 3. Limpieza de la jugada visual
@@ -244,16 +259,28 @@ func _on_new_play_requested() -> void:
 
 func _on_save_button_pressed() -> void:
 	if _is_editor_ready():
-		# Capturamos screenshot antes de abrir popup
+		# 1. Capturamos la foto y datos actuales del editor
 		var current_res = await editor.get_play_resource()
-		if _selected_play:
-			_selected_play.preview_texture = current_res.preview_texture
-			_selected_play.formations = current_res.formations
-			_selected_play.routes = current_res.routes
+		
+		if _selected_play == null:
+			_selected_play = current_res # Usamos el recurso fresco como base
+			_selected_play.name = "Nueva Jugada"
+			current_play_index = -1 
+		# -------------------------------------
+		
+		# 2. Actualizamos los datos del objeto en memoria
+		_selected_play.preview_texture = current_res.preview_texture
+		_selected_play.formations = current_res.formations
+		_selected_play.routes = current_res.routes
+		
+		# Transferimos el modo precisión
+		if "is_precision" in current_res:
+			_selected_play.set("is_precision", current_res.is_precision)
+		if "meta_data" in current_res:
+			_selected_play.set("meta_data", current_res.meta_data)
 			
 		_pending_play = _selected_play
 		_show_save_dialog()
-
 func _on_save_confirmed() -> void:
 	if not _pending_play: return
 
@@ -328,13 +355,26 @@ func _perform_silent_save() -> void:
 		
 	if not _is_editor_ready(): return
 	
+	# Obtenemos la data fresca del editor 
 	var fresh_data = editor.get_current_state_as_data()
+	
 	_selected_play.formations = fresh_data.formations
 	_selected_play.routes = fresh_data.routes
 	
+	if "is_precision" in fresh_data:
+		_selected_play.set("is_precision", fresh_data.is_precision)
+	
+	# Copiamos metadata por si acaso usas fallback
+	if "meta_data" in fresh_data:
+		_selected_play.set("meta_data", fresh_data.meta_data)
+	
 	var safe_name = _selected_play.name.validate_filename()
 	var save_path = SAVE_DIR + safe_name + ".res"
-	ResourceSaver.save(_selected_play, save_path)
+	
+	# Guardamos en disco 
+	var err = ResourceSaver.save(_selected_play, save_path)
+	if err != OK:
+		print("Error guardando jugada: ", err)
 
 func _show_save_dialog() -> void:
 	if is_instance_valid(name_input):
